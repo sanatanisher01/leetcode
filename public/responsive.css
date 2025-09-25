@@ -1,0 +1,213 @@
+/* Additional responsive styles for all pages */
+
+/* Base responsive utilities */
+@media (max-width: 1200px) {
+    .container {
+        padding: 0.75rem !important;
+    }
+    
+    .main-grid {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: auto !important;
+        height: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    /* Typography */
+    h1 { font-size: 1.5rem !important; }
+    h2 { font-size: 1.25rem !important; }
+    h3 { font-size: 1.1rem !important; }
+    
+    /* Layout */
+    .container {
+        padding: 0.5rem !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    /* Header */
+    .header {
+        flex-direction: column !important;
+        gap: 1rem !important;
+        text-align: center !important;
+        height: auto !important;
+        padding: 1rem 0.5rem !important;
+    }
+    
+    .header-actions {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        gap: 0.5rem !important;
+    }
+    
+    .header-actions .btn {
+        padding: 0.5rem 0.75rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+        height: auto !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .stat-card {
+        padding: 0.75rem !important;
+    }
+    
+    .stat-card .number {
+        font-size: 1.5rem !important;
+    }
+    
+    /* Main Grid */
+    .main-grid {
+        display: block !important;
+        height: auto !important;
+    }
+    
+    /* Sections */
+    .section {
+        margin-bottom: 1rem !important;
+        padding: 0.75rem !important;
+    }
+    
+    .section h2 {
+        font-size: 1rem !important;
+    }
+    
+    /* Tables */
+    .table-container {
+        height: 300px !important;
+        overflow-x: auto !important;
+    }
+    
+    table {
+        min-width: 500px !important;
+    }
+    
+    th, td {
+        padding: 0.25rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Forms */
+    .search-container {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    .search-input {
+        padding: 0.75rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Modals */
+    .modal-content {
+        width: 95% !important;
+        margin: 2% auto !important;
+    }
+    
+    .modal-body {
+        padding: 1rem !important;
+    }
+    
+    /* User Details */
+    .user-details {
+        padding: 1rem !important;
+    }
+    
+    .streak-info {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Notifications */
+    .notifications-sidebar {
+        width: 100% !important;
+        right: -100% !important;
+    }
+    
+    .notifications-toggle {
+        right: 10px !important;
+        top: 10px !important;
+        width: 40px !important;
+        height: 40px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Stats Grid - Single Column */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Header Actions - Stack Vertically */
+    .header-actions {
+        flex-direction: column !important;
+        width: 100% !important;
+    }
+    
+    .header-actions .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+    
+    /* Sections */
+    .section {
+        padding: 0.5rem !important;
+    }
+    
+    /* Tables */
+    .table-container {
+        height: 250px !important;
+    }
+    
+    th, td {
+        padding: 0.2rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    /* Buttons */
+    .btn {
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Login Form */
+    .login-form {
+        padding: 1.5rem !important;
+    }
+    
+    .login-form h2 {
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Landscape orientation fixes for tablets */
+@media (max-width: 1024px) and (orientation: landscape) {
+    .main-grid {
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto auto !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .notifications-toggle,
+    .notifications-sidebar,
+    .header-actions {
+        display: none !important;
+    }
+    
+    .section {
+        break-inside: avoid !important;
+        margin-bottom: 1rem !important;
+    }
+}

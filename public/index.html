@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Analytics Pro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="responsive.css">
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <div class="logo">
+                    <i class="fas fa-code"></i>
+                    <span>LeetCode Analytics Pro</span>
+                </div>
+            </div>
+            <div class="nav-menu" id="nav-menu">
+                <a href="#home" class="nav-link active">Home</a>
+                <a href="#analytics" class="nav-link">Analytics</a>
+                <a href="#leaderboard" class="nav-link">Leaderboard</a>
+                <a href="#position" class="nav-link">View Your Position</a>
+                <a href="#about" class="nav-link">About</a>
+                <a href="admin.html" class="nav-link admin-link" style="background: linear-gradient(45deg, #e74c3c, #c0392b); color: white; padding: 8px 16px; border-radius: 20px; margin-left: 10px;">Admin</a>
+            </div>
+            <div class="nav-toggle" id="nav-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero">
+        <div class="hero-background">
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1 class="hero-title">
+                    <span class="gradient-text">Analyze</span> & Compare
+                    <br>LeetCode Performance
+                </h1>
+                <p class="hero-subtitle">
+                    Get comprehensive insights into coding progress with beautiful analytics, 
+                    real-time leaderboards, and performance tracking.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" onclick="scrollToSection('input-section')">
+                        <i class="fas fa-rocket"></i>
+                        Start Analysis
+                    </button>
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-play"></i>
+                        Watch Demo
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="dashboard-preview">
+                    <div class="preview-card">
+                        <div class="card-header">
+                            <div class="dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-placeholder"></div>
+                            <div class="stats-row">
+                                <div class="stat-item"></div>
+                                <div class="stat-item"></div>
+                                <div class="stat-item"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PIN Protection Modal -->
+    <div id="pin-modal" class="pin-modal hidden">
+        <div class="pin-modal-content">
+            <div class="pin-header">
+                <i class="fas fa-lock"></i>
+                <h2>Enter PIN</h2>
+            </div>
+            
+            <form id="pin-form" class="pin-form">
+                <div class="pin-input-group">
+                    <input type="text" id="pin-input" maxlength="4" placeholder="Enter PIN" autocomplete="off">
+                </div>
+                <div class="pin-error" id="pin-error"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Input Section -->
+    <section id="input-section" class="input-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Generate Your Analytics</h2>
+                <p class="section-subtitle">Enter LeetCode usernames to create comprehensive performance analytics</p>
+            </div>
+
+            <div class="input-card glass-card">
+                <div class="input-methods">
+                    <div class="method-tab active" data-method="textarea">
+                        <i class="fas fa-keyboard"></i>
+                        <span>Manual Input</span>
+                    </div>
+                    <div class="method-tab" data-method="csv">
+                        <i class="fas fa-file-csv"></i>
+                        <span>CSV Upload</span>
+                    </div>
+                </div>
+
+                <form id="leaderboard-form" class="input-form">
+                    <div id="textarea-input" class="input-method">
+                        <label class="input-label">
+                            <i class="fas fa-users"></i>
+                            Enter LeetCode Usernames
+                        </label>
+                        <textarea 
+                            id="usernames" 
+                            class="modern-textarea"
+                            placeholder="username1&#10;username2&#10;username3"
+                            rows="6"
+                        ></textarea>
+                        <div class="input-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Enter one username per line
+                        </div>
+                    </div>
+
+                    <div id="csv-input" class="input-method hidden">
+                        <label class="input-label">
+                            <i class="fas fa-upload"></i>
+                            Upload CSV File or Paste Data
+                        </label>
+                        
+                        <div class="file-upload-area" id="file-upload-area">
+                            <input type="file" id="csv-file" accept=".csv,.txt" class="file-input">
+                            <div class="upload-content">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop your CSV file here</p>
+                                <span>or click to browse</span>
+                            </div>
+                        </div>
+                        
+                        <div class="csv-divider">
+                            <span>OR</span>
+                        </div>
+                        
+                        <textarea 
+                            id="csv-data" 
+                            class="modern-textarea"
+                            placeholder="Mayank Sharma,2315800050,https://leetcode.com/mayank-05-old&#10;Anuj Kumar,2315800012,https://leetcode.com/u/anuj1210/&#10;Prerita Saini,2315800066,https://leetcode.com/u/Prerita_1/"
+                            rows="6"
+                        ></textarea>
+                        
+                        <div class="csv-controls">
+                            <button type="button" id="process-csv" class="btn btn-secondary">
+                                <i class="fas fa-cogs"></i>
+                                Process CSV
+                            </button>
+                            <button type="button" id="load-sample-csv" class="btn btn-outline">
+                                <i class="fas fa-file-import"></i>
+                                Load Sample
+                            </button>
+                        </div>
+                        
+                        <div class="input-hint">
+                            <i class="fas fa-info-circle"></i>
+                            Format: Name,University Roll,LeetCode URL (one per line)
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submit-btn" class="btn btn-primary btn-large">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Generate Analytics</span>
+                        <div class="btn-shine"></div>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loading Section -->
+    <div id="loading" class="loading-section hidden">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h3>Analyzing Performance</h3>
+            <p>Fetching data from LeetCode API...</p>
+            <div class="loading-progress">
+                <div class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics History Section -->
+    <section id="analytics-history" class="analytics-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-history"></i>
+                    Saved Analytics
+                </h2>
+                <p class="section-subtitle">View and share previous performance analytics</p>
+            </div>
+
+            <div class="analytics-history-card glass-card">
+                <div id="analytics-list" class="analytics-list">
+                    <div class="loading-analytics">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading saved analytics...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analytics Section -->
+    <section id="analytics" class="analytics-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-chart-pie"></i>
+                    Performance Analytics
+                </h2>
+                <p class="section-subtitle">Comprehensive insights into coding performance</p>
+            </div>
+
+            <!-- Top Performers -->
+            <div class="top-performers">
+                <h3 class="subsection-title">
+                    <i class="fas fa-trophy"></i>
+                    Top Performers
+                </h3>
+                <div id="top-performers-cards" class="performers-grid"></div>
+            </div>
+
+            <!-- Statistics Overview -->
+            <div class="stats-overview">
+                <div class="stats-grid">
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="total-users">0</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="avg-problems">0</div>
+                            <div class="stat-label">Avg Problems</div>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="avg-rating">0</div>
+                            <div class="stat-label">Avg Rating</div>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-section">
+                <div class="charts-grid">
+                    <div class="chart-card glass-card">
+                        <div class="chart-header">
+                            <h4>Problems by Difficulty</h4>
+                            <div class="chart-controls">
+                                <button class="chart-btn active">Doughnut</button>
+                                <button class="chart-btn">Bar</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="difficulty-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <div class="chart-header">
+                            <h4>Contest Rating Distribution</h4>
+                            <div class="chart-info">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="rating-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <div class="chart-header">
+                            <h4>User Comparison - Total Problems</h4>
+                            <div class="chart-controls">
+                                <button class="chart-btn active" data-type="bar">Bar</button>
+                                <button class="chart-btn" data-type="pie">Pie</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="user-comparison-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-card glass-card">
+                        <div class="chart-header">
+                            <h4>User Performance Breakdown</h4>
+                            <div class="chart-info">
+                                <i class="fas fa-info-circle"></i>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="user-breakdown-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <!-- Leaderboard Section -->
+    <section id="leaderboard" class="leaderboard-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-ranking-star"></i>
+                    Leaderboard
+                </h2>
+                <div class="leaderboard-controls">
+                    <button id="sort-total" class="sort-btn active">
+                        <i class="fas fa-sort-numeric-down"></i>
+                        Total Solved
+                    </button>
+                    <button id="sort-contest" class="sort-btn">
+                        <i class="fas fa-trophy"></i>
+                        Contest Rating
+                    </button>
+                </div>
+            </div>
+
+            <div class="leaderboard-card glass-card">
+                <div class="table-container">
+                    <table id="leaderboard-table" class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Total</th>
+                                <th class="difficulty-col easy">Easy</th>
+                                <th class="difficulty-col medium">Medium</th>
+                                <th class="difficulty-col hard">Hard</th>
+                                <th>Rating</th>
+                                <th>🔥 Streak (Current/Best)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboard-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Position Section -->
+    <section id="position" class="leaderboard-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-trophy"></i>
+                    Your Position
+                </h2>
+                <p class="section-subtitle">View your ranking among all users</p>
+            </div>
+
+            <div class="search-container">
+                <div>
+                    <input type="text" id="position-search" placeholder="Search for your username...">
+                    <i class="fas fa-search"></i>
+                </div>
+            </div>
+
+            <div class="leaderboard-card glass-card">
+                <div class="table-container">
+                    <table id="position-table" class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>User</th>
+                                <th>Total</th>
+                                <th class="difficulty-col easy">Easy</th>
+                                <th class="difficulty-col medium">Medium</th>
+                                <th class="difficulty-col hard">Hard</th>
+                                <th>Rating</th>
+                                <th>🔥 Streak (Current/Best)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="position-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Error Message -->
+    <div id="error-message" class="error-toast hidden">
+        <div class="toast-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span class="toast-text"></span>
+            <button class="toast-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <i class="fas fa-code"></i>
+                        <span>LeetCode Analytics Pro</span>
+                    </div>
+                    <p>Professional coding performance analytics</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Product</h4>
+                        <a href="#analytics">Analytics</a>
+                        <a href="#leaderboard">Leaderboard</a>
+                        <a href="#api">API</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Support</h4>
+                        <a href="#docs">Documentation</a>
+                        <a href="#help">Help Center</a>
+                        <a href="#contact">Contact</a>
+                    </div>
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="social-link"><i class="fab fa-github"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 LeetCode Analytics Pro. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    <script src="realtime.js"></script>
+    
+    <script>
+        // Load analytics history
+        async function loadAnalyticsHistory() {
+            try {
+                const response = await fetch('/api/analytics-history');
+                const data = await response.json();
+                
+                const container = document.getElementById('analytics-list');
+                
+                if (data.analytics && data.analytics.length > 0) {
+                    container.innerHTML = data.analytics.map(item => `
+                        <div style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-left: 4px solid #6366f1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h4 style="margin: 0 0 0.5rem 0; color: #1f2937;">${item.title}</h4>
+                                    <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">
+                                        ${item.total_users} users • Avg: ${item.avg_problems} problems • Top: ${item.top_performer}
+                                    </p>
+                                    <p style="margin: 0.5rem 0 0 0; color: #9ca3af; font-size: 0.8rem;">
+                                        ${new Date(item.created_at).toLocaleDateString()}
+                                    </p>
+                                </div>
+                                <div>
+                                    <button onclick="shareAnalytics('${item.session_id}')" style="padding: 0.5rem 1rem; background: #6366f1; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                                        <i class="fas fa-share"></i> Share
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } else {
+                    container.innerHTML = '<p style="text-align: center; color: #6b7280; padding: 2rem;">No saved analytics found</p>';
+                }
+            } catch (error) {
+                document.getElementById('analytics-list').innerHTML = '<p style="text-align: center; color: #ef4444; padding: 2rem;">Failed to load analytics</p>';
+            }
+        }
+        
+        // Share analytics
+        function shareAnalytics(sessionId) {
+            const shareUrl = `${window.location.origin}/share/${sessionId}`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'LeetCode Analytics', url: shareUrl });
+            } else {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('Share link copied!');
+                }).catch(() => {
+                    prompt('Copy link:', shareUrl);
+                });
+            }
+        }
+        
+        // Load analytics on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAnalyticsHistory();
+        });
+        
+        window.shareAnalytics = shareAnalytics;
+    </script>
+</body>
+</html>

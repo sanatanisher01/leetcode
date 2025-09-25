@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shared Analytics - LeetCode Analytics Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            color: #1a202c;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="0.5" fill="%23ffffff" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .analytics-card {
+            background: rgba(255,255,255,0.95);
+            border-radius: 32px;
+            padding: 3rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15), 0 0 0 1px rgba(255,255,255,0.3);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255,255,255,0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .analytics-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .analytics-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .analytics-meta {
+            text-align: right;
+            color: #64748b;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.5);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.6s;
+        }
+        
+        .stat-card:hover::before {
+            left: 100%;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .top-performers {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .performers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .performer-card {
+            background: linear-gradient(135deg, #ffffff, #f8fafc);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 2px solid rgba(255,255,255,0.5);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+        
+        .performer-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .performer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ffd700, #ffed4e);
+        }
+
+        .performer-card.rank-2::before {
+            background: linear-gradient(90deg, #c0c0c0, #e5e7eb);
+        }
+
+        .performer-card.rank-3::before {
+            background: linear-gradient(90deg, #cd7f32, #d97706);
+        }
+
+        .performer-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .performer-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.8);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+        
+        .performer-card:hover .performer-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .performer-info h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .performer-rank {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .performer-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .performer-stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 8px;
+        }
+
+        .performer-stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+        }
+
+        .performer-stat-label {
+            font-size: 0.8rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .leaderboard-section {
+            margin-top: 3rem;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .table-wrapper {
+            max-height: 600px;
+            overflow-y: auto;
+            border-radius: 16px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            position: relative;
+        }
+        
+        .table-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .table-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: linear-gradient(transparent, rgba(255,255,255,0.8));
+            pointer-events: none;
+        }
+
+        .leaderboard-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+            color: white;
+            padding: 1.25rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .leaderboard-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .leaderboard-table tr:hover {
+            background: linear-gradient(90deg, #f8fafc, #ffffff, #f8fafc);
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .leaderboard-table tbody tr {
+            transition: all 0.2s ease;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid rgba(255,255,255,0.8);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .leaderboard-table tr:hover .user-avatar {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            font-weight: 700;
+            color: white;
+        }
+
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #92400e; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e5e7eb); color: #374151; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #d97706); }
+        .rank-other { background: #6366f1; }
+
+        .difficulty-easy { color: #10b981; font-weight: 600; }
+        .difficulty-medium { color: #f59e0b; font-weight: 600; }
+        .difficulty-hard { color: #ef4444; font-weight: 600; }
+
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            color: white;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .analytics-card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .stat-card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .stat-card:nth-child(1) { animation-delay: 0.1s; }
+        .stat-card:nth-child(2) { animation-delay: 0.2s; }
+        .stat-card:nth-child(3) { animation-delay: 0.3s; }
+        .stat-card:nth-child(4) { animation-delay: 0.4s; }
+        
+        .performer-card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+        
+        .performer-card:nth-child(1) { animation-delay: 0.2s; }
+        .performer-card:nth-child(2) { animation-delay: 0.3s; }
+        .performer-card:nth-child(3) { animation-delay: 0.4s; }
+
+        .error {
+            text-align: center;
+            padding: 4rem;
+            color: white;
+        }
+
+        .error i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #ef4444;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            .header h1 { font-size: 2rem; }
+            .analytics-card { padding: 2rem; }
+            .analytics-header { flex-direction: column; gap: 1rem; text-align: center; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .performers-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-chart-line"></i> LeetCode Analytics Pro</h1>
+            <p>Shared Performance Analytics</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner"></i>
+            <h2>Loading Analytics...</h2>
+            <p>Please wait while we fetch the shared analytics data</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>Analytics Not Found</h2>
+            <p>The shared analytics session could not be found or has expired</p>
+        </div>
+
+        <div id="analytics-content" style="display: none;">
+            <!-- Content will be populated by JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        // Get session ID from URL
+        const sessionId = window.location.pathname.split('/').pop();
+
+        async function loadSharedAnalytics() {
+            try {
+                const response = await fetch(`/share/${sessionId}`);
+                
+                if (!response.ok) {
+                    throw new Error('Analytics not found');
+                }
+
+                const data = await response.json();
+                displayAnalytics(data);
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        function displayAnalytics(data) {
+            const { title, leaderboard, analytics, createdAt } = data;
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('analytics-content').style.display = 'block';
+
+            const content = `
+                <div class="analytics-card">
+                    <div class="analytics-header">
+                        <h1 class="analytics-title">${title}</h1>
+                        <div class="analytics-meta">
+                            <div><strong>${analytics.totalUsers}</strong> Users Analyzed</div>
+                            <div>${new Date(createdAt).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-value">${analytics.totalUsers}</div>
+                            <div class="stat-label">Total Users</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-code"></i></div>
+                            <div class="stat-value">${analytics.averageProblems}</div>
+                            <div class="stat-label">Average Problems</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="stat-value">${Math.round(analytics.averageRating / 1000)}K</div>
+                            <div class="stat-label">Average Rating</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-fire"></i></div>
+                            <div class="stat-value">${Math.max(...leaderboard.map(u => u.longestStreak))}</div>
+                            <div class="stat-label">Highest Streak</div>
+                        </div>
+                    </div>
+
+                    <div class="top-performers">
+                        <h2 class="section-title">
+                            <i class="fas fa-medal"></i>
+                            Top Performers
+                        </h2>
+                        <div class="performers-grid">
+                            ${analytics.topPerformers.map((user, index) => `
+                                <div class="performer-card rank-${index + 1}">
+                                    <div class="performer-header">
+                                        <img src="${user.avatar}" alt="${user.username}" class="performer-avatar">
+                                        <div class="performer-info">
+                                            <h3>${user.username}</h3>
+                                            <div class="performer-rank">Rank #${user.rank}</div>
+                                        </div>
+                                    </div>
+                                    <div class="performer-stats">
+                                        <div class="performer-stat">
+                                            <div class="performer-stat-value">${user.totalSolved}</div>
+                                            <div class="performer-stat-label">Total Solved</div>
+                                        </div>
+                                        <div class="performer-stat">
+                                            <div class="performer-stat-value">${user.longestStreak}</div>
+                                            <div class="performer-stat-label">Best Streak</div>
+                                        </div>
+                                        <div class="performer-stat">
+                                            <div class="performer-stat-value difficulty-easy">${user.easy}</div>
+                                            <div class="performer-stat-label">Easy</div>
+                                        </div>
+                                        <div class="performer-stat">
+                                            <div class="performer-stat-value difficulty-hard">${user.hard}</div>
+                                            <div class="performer-stat-label">Hard</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="leaderboard-section">
+                        <h2 class="section-title">
+                            <i class="fas fa-list-ol"></i>
+                            Complete Leaderboard
+                        </h2>
+                        <div class="table-wrapper">
+                            <table class="leaderboard-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>User</th>
+                                    <th>Total</th>
+                                    <th>Easy</th>
+                                    <th>Medium</th>
+                                    <th>Hard</th>
+                                    <th>Streak</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${leaderboard.map(user => `
+                                    <tr>
+                                        <td>
+                                            <span class="rank-badge ${user.rank <= 3 ? `rank-${user.rank}` : 'rank-other'}">
+                                                ${user.rank}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="user-info">
+                                                <img src="${user.avatar}" alt="${user.username}" class="user-avatar">
+                                                <span>${user.username}</span>
+                                            </div>
+                                        </td>
+                                        <td><strong>${user.totalSolved}</strong></td>
+                                        <td><span class="difficulty-easy">${user.easy}</span></td>
+                                        <td><span class="difficulty-medium">${user.medium}</span></td>
+                                        <td><span class="difficulty-hard">${user.hard}</span></td>
+                                        <td><span style="color: #f59e0b;">🔥 ${user.longestStreak}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                            </table>
+                        </div>
+                        <p style="text-align: center; margin-top: 1rem; color: #64748b;">Showing all ${leaderboard.length} users</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('analytics-content').innerHTML = content;
+        }
+
+        // Load analytics on page load
+        loadSharedAnalytics();
+    </script>
+</body>
+</html>

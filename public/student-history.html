@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student History - LeetCode Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="responsive.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-500: #64748b;
+            --gray-700: #334155;
+            --gray-900: #0f172a;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .student-info h1 {
+            color: var(--gray-900);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .student-meta {
+            color: var(--gray-500);
+            font-size: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+        }
+
+        .history-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: var(--gray-100);
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .table-header h2 {
+            color: var(--gray-900);
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--gray-50);
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        .today-row {
+            background: rgba(37, 99, 235, 0.05);
+            font-weight: 600;
+        }
+
+        .progress-positive {
+            color: var(--success);
+            font-weight: 600;
+        }
+
+        .progress-zero {
+            color: var(--gray-500);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .loading i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="student-info">
+                <h1 id="studentName">Loading...</h1>
+                <div class="student-meta" id="studentMeta">Fetching student information...</div>
+            </div>
+            <a href="admin.html" class="btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        <div class="history-table">
+            <div class="table-header">
+                <h2><i class="fas fa-history"></i> Complete Activity History</h2>
+            </div>
+            <div id="tableContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    <p>Loading complete history...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get('username');
+        const studentName = urlParams.get('name');
+        const rollNo = urlParams.get('roll');
+
+        // Update header
+        document.getElementById('studentName').textContent = studentName || username;
+        document.getElementById('studentMeta').textContent = `${rollNo ? rollNo + ' • ' : ''}@${username}`;
+
+        async function loadFullHistory() {
+            try {
+                const response = await fetch(`/admin/user/${username}/full-history`);
+                const data = await response.json();
+                
+                displayHistory(data.history);
+            } catch (error) {
+                console.error('Failed to load history:', error);
+                document.getElementById('tableContainer').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                        <p>Failed to load history data</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayHistory(history) {
+            if (!history || history.length === 0) {
+                document.getElementById('tableContainer').innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-chart-line" style="color: var(--gray-500);"></i>
+                        <p>No activity history found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            
+            const tableHTML = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Total Solved</th>
+                            <th>Easy</th>
+                            <th>Medium</th>
+                            <th>Hard</th>
+                            <th>Daily Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${history.map((day, index) => {
+                            const prevDay = index > 0 ? history[index - 1] : null;
+                            const dailyProgress = prevDay ? 
+                                Math.max(0, (day.total_solved || 0) - (prevDay.total_solved || 0)) : 0;
+                            
+                            const isToday = day.date === today;
+                            const rowClass = isToday ? 'today-row' : '';
+                            const progressClass = dailyProgress > 0 ? 'progress-positive' : 'progress-zero';
+                            
+                            return `
+                                <tr class="${rowClass}">
+                                    <td>${new Date(day.date).toLocaleDateString()}${isToday ? ' (Today)' : ''}</td>
+                                    <td><strong>${day.total_solved || 0}</strong></td>
+                                    <td style="color: var(--success);">${day.easy_solved || 0}</td>
+                                    <td style="color: var(--warning);">${day.medium_solved || 0}</td>
+                                    <td style="color: var(--danger);">${day.hard_solved || 0}</td>
+                                    <td class="${progressClass}">+${dailyProgress}</td>
+                                </tr>
+                            `;
+                        }).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            document.getElementById('tableContainer').innerHTML = tableHTML;
+        }
+
+        // Load data on page load
+        if (username) {
+            loadFullHistory();
+        } else {
+            document.getElementById('tableContainer').innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>
+                    <p>No username provided</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

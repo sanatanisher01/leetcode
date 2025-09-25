@@ -1,0 +1,4092 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeetCode Analytics Pro - Admin Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --info: #0891b2;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --border: #e2e8f0;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #e0ffff 0%, #b0f0f0 50%, #87ceeb 100%);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Login Form */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            padding: 3rem;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 480px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(135deg, var(--primary), var(--info), var(--success));
+        }
+
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 0.5rem;
+            color: var(--gray-900);
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .login-brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-brand i {
+            font-size: 3.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .login-subtitle {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+            font-weight: 500;
+        }
+
+        .credentials-info {
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .credentials-info h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .credential-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        .credential-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .credential-label {
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .credential-value {
+            font-family: 'Courier New', monospace;
+            background: var(--primary);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .credential-value:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #ff9999, #ffb3b3);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(255, 153, 153, 0.3);
+        }
+        
+        .btn:nth-child(even) {
+            background: linear-gradient(135deg, #ff9999, #ffb3b3);
+        }
+
+        .btn.full-width {
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 30px rgba(255, 153, 153, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 1rem;
+            padding: 0.75rem;
+            background: rgba(220, 38, 38, 0.1);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            border-radius: 8px;
+            font-size: 0.875rem;
+        }
+
+        /* Dashboard */
+        .dashboard {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .notifications-sidebar {
+            position: fixed;
+            right: -400px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: white;
+            border-left: 1px solid var(--border);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .notifications-sidebar.open {
+            right: 0;
+        }
+
+        .notifications-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--gray-50);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications-toggle {
+            position: fixed;
+            right: 20px;
+            top: 120px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            transition: all 0.3s ease;
+        }
+
+        .notifications-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        .notifications-content {
+            padding: 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .notifications-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100px); }
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0;
+            padding: 1rem;
+            height: 100vh;
+            overflow: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .container::-webkit-scrollbar {
+            display: none;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            height: 80px;
+        }
+
+        .header h1 {
+            color: var(--gray-900);
+            font-size: 1.75rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header h1 i {
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+        
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--gray-700);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header-actions {
+                position: relative;
+            }
+            
+            .mobile-menu-toggle {
+                display: block;
+            }
+            
+            .header-actions-content {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                box-shadow: var(--shadow-lg);
+                padding: 1rem;
+                min-width: 250px;
+                z-index: 1000;
+                display: none;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .header-actions-content.show {
+                display: flex;
+            }
+            
+            .header-actions-content .btn {
+                width: 100%;
+                justify-content: center;
+                margin: 0;
+            }
+            
+            .header-actions-content select {
+                width: 100%;
+                margin: 0;
+            }
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #ff9999, #ffb3b3);
+            color: white;
+            border: 2px solid #ff9999;
+            box-shadow: 0 4px 15px rgba(255, 153, 153, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-50);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ff9999, #ffb3b3);
+            box-shadow: 0 4px 15px rgba(255, 153, 153, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+            height: 120px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--info));
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .stat-card h3 {
+            color: var(--gray-600);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .trend {
+            font-size: 0.875rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+        }
+
+        .section {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .section h2 {
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section h2 i {
+            color: var(--primary);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-top: 1rem;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .table-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 0.5rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+        }
+
+        th {
+            background: var(--gray-50);
+            color: var(--gray-700);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.75rem 0.5rem;
+        }
+
+        td {
+            color: var(--gray-900);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            font-weight: 700;
+            font-size: 0.875rem;
+        }
+
+        .rank-badge.rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            color: #92400e;
+        }
+
+        .rank-badge.rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #e5e7eb);
+            color: #374151;
+        }
+
+        .rank-badge.rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #d97706);
+            color: #ffffff;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: rgba(5, 150, 105, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(217, 119, 6, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(220, 38, 38, 0.1);
+            color: var(--danger);
+        }
+
+        .badge-primary {
+            background: rgba(37, 99, 235, 0.1);
+            color: var(--primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--gray-400);
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            background: white;
+        }
+
+        .user-details {
+            display: none;
+            background: var(--gray-50);
+            border: 2px solid var(--border);
+            padding: 2rem;
+            border-radius: 16px;
+            margin-top: 1.5rem;
+            animation: slideIn 0.3s ease;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        .user-details::-webkit-scrollbar {
+            display: none;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Hide scrollbars globally while keeping scroll functionality */
+        * {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        
+        *::-webkit-scrollbar {
+            display: none;
+        }
+
+        .user-details h3 {
+            color: var(--gray-900);
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .user-details h3 i {
+            color: var(--primary);
+        }
+
+        .streak-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .streak-card {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .streak-card:hover {
+            box-shadow: var(--shadow);
+            transform: translateY(-3px);
+        }
+
+        .streak-card h4 {
+            color: var(--gray-600);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .streak-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .streak-card .text {
+            color: var(--gray-900);
+            font-weight: 500;
+        }
+
+        .notification {
+            background: white;
+            border: 1px solid var(--border);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            border-left: 3px solid var(--primary);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification:hover {
+            box-shadow: var(--shadow);
+            transform: translateX(-3px);
+        }
+
+        .notification.unread {
+            background: rgba(37, 99, 235, 0.02);
+            border-left-color: var(--primary);
+        }
+
+        .notification.read {
+            background: var(--gray-50);
+            border-left-color: var(--gray-300);
+            opacity: 0.8;
+        }
+
+        .notification-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+
+        .notification.read .notification-dot {
+            background: var(--gray-400);
+        }
+
+        .notification-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .notification-user {
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .notification-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .notification-time {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .notification-message {
+            color: var(--gray-700);
+            line-height: 1.5;
+        }
+
+        .mark-read-btn {
+            padding: 0.5rem 1rem;
+            background: linear-gradient(135deg, var(--success), #047857);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mark-read-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr !important;
+                grid-template-rows: auto !important;
+                height: auto !important;
+            }
+            
+            .section {
+                margin-bottom: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 1rem;
+            }
+            
+            .login-form {
+                padding: 2rem;
+                max-width: 100%;
+            }
+            
+            .login-form h2 {
+                font-size: 1.5rem;
+            }
+            
+            .dashboard {
+                height: auto;
+                overflow: visible;
+            }
+            
+            .container {
+                padding: 0.5rem;
+                height: auto;
+                overflow: visible;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+                height: auto;
+                padding: 1rem 0.5rem;
+            }
+            
+            .header h1 {
+                font-size: 1.25rem;
+            }
+            
+            .header-actions {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0.5rem;
+            }
+            
+            .header-actions .btn {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 0.5rem;
+                height: auto;
+                margin-bottom: 1rem;
+            }
+            
+            .stat-card {
+                padding: 0.75rem;
+            }
+            
+            .stat-card .number {
+                font-size: 1.5rem;
+            }
+            
+            .main-grid {
+                display: block !important;
+                height: auto !important;
+            }
+            
+            .section {
+                margin-bottom: 1rem !important;
+                padding: 0.75rem;
+            }
+            
+            .section h2 {
+                font-size: 1rem !important;
+            }
+            
+            .table-container {
+                height: 300px !important;
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 500px;
+            }
+            
+            th, td {
+                padding: 0.25rem;
+                font-size: 0.75rem;
+            }
+            
+            .notifications-sidebar {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .notifications-toggle {
+                right: 10px;
+                top: 10px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .search-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .search-input {
+                padding: 0.75rem;
+                font-size: 0.9rem;
+            }
+            
+            .streak-info {
+                grid-template-columns: 1fr;
+                gap: 0.5rem;
+            }
+            
+            .user-details {
+                padding: 1rem;
+            }
+            
+            .modal-content {
+                width: 95% !important;
+                margin: 2% auto !important;
+            }
+            
+            .modal-body {
+                padding: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-actions {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .header-actions .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .section {
+                padding: 0.5rem;
+            }
+            
+            .table-container {
+                height: 250px !important;
+            }
+            
+            th, td {
+                padding: 0.2rem;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Form -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-form">
+            <div class="login-brand">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2>Admin Dashboard</h2>
+            <p class="login-subtitle">Secure access to LeetCode Analytics Pro</p>
+            <form id="loginForm" method="POST">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit" class="btn full-width">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Login
+                </button>
+                <div class="error" id="loginError"></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notifications Toggle Button -->
+    <button class="notifications-toggle" id="notificationsToggle" onclick="toggleNotifications()">
+        <i class="fas fa-bell"></i>
+    </button>
+
+    <!-- Notifications Sidebar -->
+    <div class="notifications-sidebar" id="notificationsSidebar">
+        <div class="notifications-header">
+            <h3 style="margin: 0; color: var(--gray-900); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fas fa-bell" style="color: var(--primary);"></i>
+                Notifications
+                <span class="badge badge-primary" id="notificationCount" style="margin-left: 0.5rem;">0</span>
+            </h3>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <button onclick="markAllAsRead()" id="markAllBtn" style="background: var(--success); color: white; border: none; padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.75rem; cursor: pointer; display: none;">
+                    <i class="fas fa-check-double"></i> Mark All Read
+                </button>
+                <button onclick="toggleNotifications()" style="background: none; border: none; color: var(--gray-500); font-size: 1.2rem; cursor: pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="notifications-content" id="notificationsList">
+            <!-- Notifications will be loaded here -->
+        </div>
+    </div>
+
+    <!-- Dashboard -->
+    <div class="dashboard" id="dashboard">
+        <div class="container">
+            <div class="header">
+                <h1><i class="fas fa-tachometer-alt"></i>LeetCode Analytics Pro</h1>
+                <div class="header-actions">
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="header-actions-content" id="headerActionsContent">
+                        <select id="batchFilter" onchange="applyBatchFilter()" style="padding: 0.75rem 1rem; font-size: 0.9rem; border: 2px solid #ff9999; border-radius: 8px; background: white; color: #333; margin-right: 0.5rem;">
+                            <option value="all">All Batches</option>
+                        </select>
+                        <button class="btn btn-secondary" onclick="openBatchModal()" style="padding: 0.75rem 1rem; font-size: 0.9rem; margin-right: 1rem;">
+                            <i class="fas fa-plus"></i>
+                            Manage Batches
+                        </button>
+                        <button class="btn btn-secondary" onclick="openQuickAddModal()" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-user-plus"></i>
+                            Quick Add
+                        </button>
+
+                        <button class="btn btn-success" onclick="generatePDFReport()" id="pdfReportBtn" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-file-pdf"></i>
+                            Get Data
+                        </button>
+                        <button class="btn btn-warning" onclick="openCSVUploadModal()" id="csvUploadBtn" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-upload"></i>
+                            Upload CSV
+                        </button>
+                        <button class="btn btn-primary" onclick="refreshAllData()" id="refreshDataBtn" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-sync-alt"></i>
+                            Refresh
+                        </button>
+                        <button class="btn btn-danger" onclick="deleteAllData()" id="deleteAllBtn" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-trash-alt"></i>
+                            Delete All
+                        </button>
+                        <button class="btn btn-danger" onclick="logout()" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-users"></i></div>
+                    <h3>Total Students</h3>
+                    <div class="number" id="totalUsers">0</div>
+                    <div class="trend"><i class="fas fa-arrow-up"></i> Registered</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-user-check"></i></div>
+                    <h3>Active Today</h3>
+                    <div class="number" id="activeToday">0</div>
+                    <div class="trend"><i class="fas fa-fire"></i> Solving</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-bell"></i></div>
+                    <h3>Notifications</h3>
+                    <div class="number" id="unreadNotifications">0</div>
+                    <div class="trend"><i class="fas fa-exclamation-circle"></i> Unread</div>
+                </div>
+                <div class="stat-card">
+                    <div class="icon"><i class="fas fa-fire"></i></div>
+                    <h3>Highest Streak</h3>
+                    <div class="number" id="highestStreak">0</div>
+                    <div class="trend"><i class="fas fa-trophy"></i> Record</div>
+                </div>
+            </div>
+
+            <!-- Main Content Grid -->
+            <div class="main-grid" style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 1rem; height: calc(100vh - 280px);">
+                
+                <!-- Current Leaderboard -->
+                <div class="section" style="margin-bottom: 0;">
+                    <h2 style="font-size: 1.2rem; margin-bottom: 1rem; cursor: pointer; transition: color 0.3s;" onclick="openLeaderboardModal()" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color=''"><i class="fas fa-trophy"></i>Current Leaderboard <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 0.5rem;"></i></h2>
+                    <div class="table-container" style="height: calc(100% - 60px); overflow-y: auto;">
+                        <table id="currentLeaderboardTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Student</th>
+                                    <th>Total</th>
+                                    <th>E/M/H</th>
+                                    <th>Streak</th>
+                                </tr>
+                            </thead>
+                            <tbody id="currentLeaderboardBody">
+                                <tr>
+                                    <td colspan="5" class="empty-state">
+                                        <i class="fas fa-chart-line"></i>
+                                        <p>Loading...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Inactive Students -->
+                <div class="section" style="margin-bottom: 0;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <h2 style="font-size: 1.2rem; margin: 0; cursor: pointer; transition: color 0.3s;" onclick="openInactiveModal()" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color=''"><i class="fas fa-exclamation-triangle" style="color: var(--danger);"></i>Inactive Students (<span id="totalInactiveCount">0</span> total, showing top 20) <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 0.5rem;"></i></h2>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="file" id="csvFileInput" accept=".csv" style="display: none;" onchange="handleCSVUpload(event)">
+                            <button onclick="document.getElementById('csvFileInput').click()" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                                <i class="fas fa-upload"></i>
+                                Upload CSV
+                            </button>
+                            <button onclick="sendBulkWarningEmails()" class="btn btn-warning" style="padding: 0.5rem 1rem; font-size: 0.8rem;">
+                                <i class="fas fa-envelope-bulk"></i>
+                                Bulk Email
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container" style="height: calc(100% - 80px); overflow-y: auto;">
+                        <table id="inactiveUsersTable">
+                            <thead>
+                                <tr>
+                                    <th>Student</th>
+                                    <th>Days</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inactiveUsersBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top Performers -->
+                <div class="section" style="margin-bottom: 0;">
+                    <h2 style="font-size: 1.2rem; margin-bottom: 1rem; cursor: pointer; transition: color 0.3s;" onclick="openTopPerformersModal()" onmouseover="this.style.color='var(--success)'" onmouseout="this.style.color=''"><i class="fas fa-star"></i>Top Performers <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 0.5rem;"></i></h2>
+                    <div class="table-container" style="height: calc(100% - 60px); overflow-y: auto;">
+                        <table id="topStreaksTable">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Student</th>
+                                    <th>Current</th>
+                                    <th>Best</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topStreaksBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Search & Management -->
+                <div class="section" style="margin-bottom: 0;">
+                    <h2 style="font-size: 1.2rem; margin-bottom: 1rem; cursor: pointer; transition: color 0.3s;" onclick="openStudentSearchModal()" onmouseover="this.style.color='var(--info)'" onmouseout="this.style.color=''"><i class="fas fa-search"></i>Student Search <i class="fas fa-external-link-alt" style="font-size: 0.8rem; margin-left: 0.5rem;"></i></h2>
+                    <div class="search-container" style="margin-bottom: 1rem;">
+                        <input type="text" id="userSearchInput" class="search-input" placeholder="Search by name or username..." style="padding: 0.75rem; font-size: 0.9rem;" onkeypress="if(event.key==='Enter') searchUser()">
+                        <button class="btn btn-primary" onclick="searchUser()" style="padding: 0.75rem 1rem; font-size: 0.9rem;">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="user-details" id="userDetails" style="height: calc(100% - 100px); overflow-y: auto;">
+                        <!-- User details will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <!-- Email Modal -->
+    <div class="modal" id="emailModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background: white; margin: 5% auto; padding: 0; width: 90%; max-width: 600px; border-radius: 16px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);">
+                <h2 id="emailModalTitle" style="margin: 0; color: var(--gray-900); font-size: 1.5rem;">Send Email</h2>
+                <button class="modal-close" onclick="closeEmailModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: 0.5rem; border-radius: 50%; transition: all 0.3s ease;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="emailForm" onsubmit="event.preventDefault(); sendEmailFromModal();">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="emailRecipient" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">To:</label>
+                        <input type="email" id="emailRecipient" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="emailSubject" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Subject:</label>
+                        <input type="text" id="emailSubject" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label for="emailMessage" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Message:</label>
+                        <textarea id="emailMessage" required rows="8" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem; resize: vertical; font-family: inherit;"></textarea>
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeEmailModal()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" id="sendEmailBtn" class="btn btn-primary">
+                            <i class="fas fa-paper-plane"></i> Send Email
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Upload Modal -->
+    <div class="modal" id="csvUploadModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background: white; margin: 10% auto; padding: 0; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);">
+                <h2 style="margin: 0; color: var(--gray-900); font-size: 1.5rem;"><i class="fas fa-upload"></i> Upload Student CSV</h2>
+                <button class="modal-close" onclick="closeCSVUploadModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: 0.5rem; border-radius: 50%; transition: all 0.3s ease;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <div style="margin-bottom: 1.5rem; padding: 1rem; background: #f0f9ff; border-radius: 8px; border-left: 4px solid #0ea5e9;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #0369a1;">CSV Format (Same as View Analytics):</h4>
+                    <p style="margin: 0; font-size: 0.9rem; color: #0369a1;">Name, Roll No, LeetCode Username/URL</p>
+                    <p style="margin: 0.5rem 0 0 0; font-size: 0.8rem; color: #0369a1;">Example: John Doe, 2021001, https://leetcode.com/john_doe/</p>
+                </div>
+                <form id="csvUploadForm" onsubmit="event.preventDefault(); uploadCSVFile();">
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label for="csvFileUpload" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Select CSV File:</label>
+                        <input type="file" id="csvFileUpload" accept=".csv" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;">
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeCSVUploadModal()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" id="csvUploadSubmitBtn" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> Upload CSV
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Add Modal -->
+    <div class="modal" id="quickAddModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background: white; margin: 10% auto; padding: 0; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);">
+                <h2 style="margin: 0; color: var(--gray-900); font-size: 1.5rem;"><i class="fas fa-user-plus"></i> Quick Add Student</h2>
+                <button class="modal-close" onclick="closeQuickAddModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: 0.5rem; border-radius: 50%; transition: all 0.3s ease;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="quickAddForm" onsubmit="event.preventDefault(); addStudentFromModal();">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="quickUsername" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">LeetCode Username:</label>
+                        <input type="text" id="quickUsername" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;" placeholder="Enter LeetCode username">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label for="quickEmail" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Email Address:</label>
+                        <input type="email" id="quickEmail" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;" placeholder="Enter email address">
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeQuickAddModal()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" id="quickAddBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Student
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Management Modal -->
+    <div class="modal" id="batchModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(5px);">
+        <div class="modal-content" style="background: white; margin: 10% auto; padding: 0; width: 90%; max-width: 500px; border-radius: 16px; box-shadow: var(--shadow-lg); animation: slideIn 0.3s ease;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--border);">
+                <h2 style="margin: 0; color: var(--gray-900); font-size: 1.5rem;"><i class="fas fa-graduation-cap"></i> Manage Batches</h2>
+                <button onclick="closeBatchModal()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--gray-500); padding: 0.5rem; border-radius: 50%; transition: all 0.3s ease;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem;">
+                <form id="batchForm" onsubmit="event.preventDefault(); addBatch();">
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label for="batchPrefix" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Batch Prefix (e.g., 24):</label>
+                        <input type="text" id="batchPrefix" required maxlength="2" pattern="[0-9]{2}" style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;" placeholder="24">
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label for="batchName" style="display: block; margin-bottom: 0.5rem; color: var(--gray-700); font-weight: 500;">Batch Name:</label>
+                        <input type="text" id="batchName" required style="width: 100%; padding: 0.75rem; border: 2px solid var(--border); border-radius: 8px; background: var(--gray-50); color: var(--gray-900); font-size: 1rem;" placeholder="Batch 24-28">
+                    </div>
+                    
+                    <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                        <button type="button" onclick="closeBatchModal()" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </button>
+                        <button type="submit" id="addBatchBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Batch
+                        </button>
+                    </div>
+                </form>
+                
+                <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                    <h4 style="margin: 0 0 1rem 0; color: var(--gray-900);">Existing Batches:</h4>
+                    <div id="batchList" style="max-height: 200px; overflow-y: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Modals -->
+    <div class="modal" id="sectionModal" style="display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(10px);">
+        <div class="modal-content" style="background: linear-gradient(135deg, #e0ffff 0%, #b0f0f0 50%, #87ceeb 100%); margin: 2% auto; padding: 0; width: 95%; max-width: 1200px; height: 90%; border-radius: 20px; box-shadow: 0 25px 50px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; overflow: hidden;">
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 2rem; background: rgba(255,255,255,0.2); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.3);">
+                <h2 id="sectionModalTitle" style="margin: 0; color: #1e293b; font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 1rem;"></h2>
+                <button onclick="closeSectionModal()" style="background: rgba(239, 68, 68, 0.1); border: none; border-radius: 50%; width: 50px; height: 50px; cursor: pointer; color: #dc2626; font-size: 1.5rem; transition: all 0.3s ease;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 2rem; height: calc(100% - 120px); overflow-y: auto; background: rgba(255,255,255,0.1);">
+                <div id="sectionModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let dashboardData = {};
+        let currentLeaderboardData = [];
+        let currentBatchFilter = 'all';
+        let availableBatches = [];
+
+        // Login functionality
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const response = await fetch('/admin/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+                
+                if (response.ok) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                    loadDashboard();
+                } else {
+                    document.getElementById('loginError').textContent = result.error;
+                }
+            } catch (error) {
+                document.getElementById('loginError').textContent = 'Login failed. Please try again.';
+            }
+        });
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                showLoadingState();
+                
+                // Load batches first
+                await loadBatches();
+                
+                const url = currentBatchFilter === 'all' ? 
+                    '/admin/dashboard' : 
+                    `/admin/dashboard?batch=${currentBatchFilter}`;
+                const response = await fetch(url);
+                dashboardData = await response.json();
+                
+                // Update stats with animation
+                animateCounter('totalUsers', dashboardData.totalUsers || 0);
+                animateCounter('activeToday', dashboardData.activeToday || 0);
+                animateCounter('unreadNotifications', dashboardData.notifications?.length || 0);
+                animateCounter('highestStreak', dashboardData.highestStreak || 0);
+                
+                // Update total inactive count
+                if (document.getElementById('totalInactiveCount')) {
+                    document.getElementById('totalInactiveCount').textContent = dashboardData.totalInactiveStudents || 0;
+                }
+
+                // Load all sections
+                loadNotifications();
+                loadInactiveUsers();
+                loadTopStreaks();
+                loadCurrentLeaderboard();
+                
+            } catch (error) {
+                console.error('Failed to load dashboard:', error);
+                showError('Failed to load dashboard data');
+            }
+        }
+
+        // Animate counter numbers
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            const animate = (currentTime) => {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                element.textContent = currentValue;
+
+                if (progress < 1) {
+                    requestAnimationFrame(animate);
+                }
+            };
+
+            requestAnimationFrame(animate);
+        }
+
+        // Show loading state
+        function showLoadingState() {
+            const elements = ['totalUsers', 'activeToday', 'unreadNotifications', 'highestStreak'];
+            elements.forEach(id => {
+                document.getElementById(id).innerHTML = '<div class="loading-spinner"></div>';
+            });
+        }
+
+        // Load notifications
+        function loadNotifications() {
+            const container = document.getElementById('notificationsList');
+            const countBadge = document.getElementById('notificationCount');
+            container.innerHTML = '';
+
+            if (!dashboardData.notifications || dashboardData.notifications.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem; text-align: center;">
+                        <i class="fas fa-bell-slash" style="font-size: 2rem; color: var(--gray-400); margin-bottom: 1rem;"></i>
+                        <p style="color: var(--gray-500); margin: 0;">No notifications</p>
+                    </div>
+                `;
+                countBadge.textContent = '0';
+                return;
+            }
+
+            const unreadCount = dashboardData.notifications.filter(n => !n.is_read).length;
+            countBadge.textContent = unreadCount;
+            
+            // Update toggle button badge
+            const toggleBtn = document.getElementById('notificationsToggle');
+            const markAllBtn = document.getElementById('markAllBtn');
+            
+            if (unreadCount > 0) {
+                toggleBtn.innerHTML = `<i class="fas fa-bell"></i><span style="position: absolute; top: -5px; right: -5px; background: var(--danger); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: flex; align-items: center; justify-content: center;">${unreadCount}</span>`;
+                markAllBtn.style.display = 'block';
+            } else {
+                toggleBtn.innerHTML = '<i class="fas fa-bell"></i>';
+                markAllBtn.style.display = 'none';
+            }
+
+            dashboardData.notifications.forEach((notification, index) => {
+                const div = document.createElement('div');
+                div.className = `notification ${notification.is_read ? 'read' : 'unread'}`;
+                div.onclick = () => markAsRead(notification.id);
+                
+                const timeAgo = getTimeAgo(new Date(notification.created_at));
+                
+                div.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <span class="notification-dot"></span>
+                        <div style="flex: 1;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                                <strong style="color: var(--gray-900); font-size: 0.9rem;">${notification.username}</strong>
+                                <span style="font-size: 0.75rem; color: var(--gray-500);">${timeAgo}</span>
+                            </div>
+                            <div style="color: var(--gray-700); font-size: 0.85rem; line-height: 1.4;">${notification.message}</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Toggle notifications sidebar
+        function toggleNotifications() {
+            const sidebar = document.getElementById('notificationsSidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('open');
+            }
+        }
+
+        // Mark all notifications as read
+        async function markAllAsRead() {
+            if (!dashboardData.notifications || dashboardData.notifications.length === 0) {
+                showSuccessMessage('No notifications to mark as read');
+                return;
+            }
+            
+            const unreadNotifications = dashboardData.notifications.filter(n => !n.is_read);
+            if (unreadNotifications.length === 0) {
+                showSuccessMessage('All notifications are already read');
+                return;
+            }
+            
+            try {
+                // Simply mark all as read locally since we don't have the server endpoint
+                dashboardData.notifications.forEach(n => n.is_read = true);
+                loadNotifications();
+                document.getElementById('unreadNotifications').textContent = '0';
+                showSuccessMessage(`Marked ${unreadNotifications.length} notifications as read`);
+            } catch (error) {
+                console.error('Failed to mark all as read:', error);
+                showError('Failed to mark notifications as read');
+            }
+        }
+
+        // Get time ago string
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffInSeconds = Math.floor((now - date) / 1000);
+            
+            if (diffInSeconds < 60) return 'Just now';
+            if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+            if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+            return `${Math.floor(diffInSeconds / 86400)}d ago`;
+        }
+
+        // Load inactive users
+        function loadInactiveUsers() {
+            const tbody = document.getElementById('inactiveUsersBody');
+            tbody.innerHTML = '';
+
+            const inactiveData = dashboardData.inactiveStudents || [];
+            if (inactiveData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="empty-state">
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                            <p>All students are active! 🎉</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            inactiveData.forEach((student) => {
+                const row = document.createElement('tr');
+                
+                const daysInactive = student.days_inactive === 999 ? 'Never' : Math.floor(student.days_inactive);
+                const lastActivity = student.last_activity_date ? 
+                    getTimeAgo(new Date(student.last_activity_date)) : 'Never';
+                
+                row.innerHTML = `
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--danger); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                ${(student.name || student.username).charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--gray-900);">
+                                    ${student.name || student.username}
+                                </strong>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">
+                                    ${student.roll_no ? `Roll: ${student.roll_no} • ` : ''}
+                                    <a href="https://leetcode.com/${student.username}/" target="_blank" 
+                                       style="color: var(--danger); text-decoration: none;" 
+                                       onmouseover="this.style.textDecoration='underline'" 
+                                       onmouseout="this.style.textDecoration='none'">
+                                        @${student.username}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-danger" style="font-size: 0.7rem;">
+                            ${daysInactive === 'Never' ? 'Never' : daysInactive + 'd'}
+                        </span>
+                    </td>
+                    <td style="font-size: 0.85rem;">${student.total_solved || 0}</td>
+                    <td>
+                        <button onclick="sendWarningEmail('${student.username}')" 
+                                class="btn btn-warning" 
+                                style="padding: 0.4rem 0.8rem; font-size: 0.7rem;" 
+                                title="Send Warning Email">
+                            <i class="fas fa-envelope"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load top streaks
+        function loadTopStreaks() {
+            const tbody = document.getElementById('topStreaksBody');
+            tbody.innerHTML = '';
+
+            if (!dashboardData.topStreaks || dashboardData.topStreaks.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="empty-state">
+                            <i class="fas fa-fire"></i>
+                            <p>No streak data available</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            dashboardData.topStreaks.forEach((student, index) => {
+                const row = document.createElement('tr');
+                const rankBadge = index < 3 ? 
+                    `<div class="rank-badge rank-${index + 1}">${index + 1}</div>` : 
+                    `<span>#${index + 1}</span>`;
+                
+                const lastActivity = student.last_activity_date ? 
+                    getTimeAgo(new Date(student.last_activity_date)) : 'Never';
+                
+                row.innerHTML = `
+                    <td>${rankBadge}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                ${(student.name || student.username).charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--gray-900);">
+                                    ${student.name || student.username}
+                                </strong>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">
+                                    ${student.roll_no ? `Roll: ${student.roll_no} • ` : ''}
+                                    <a href="https://leetcode.com/${student.username}/" target="_blank" 
+                                       style="color: var(--primary); text-decoration: none;" 
+                                       onmouseover="this.style.textDecoration='underline'" 
+                                       onmouseout="this.style.textDecoration='none'">
+                                        @${student.username}
+                                    </a>
+                                </div>
+                                <div style="font-size: 0.7rem; color: var(--gray-500);">
+                                    ${student.total_solved || 0} problems
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><span style="color: var(--warning); font-weight: 600; font-size: 0.85rem;">${student.current_streak || 0} ${student.current_streak > 0 ? '🔥' : ''}</span></td>
+                    <td><span style="color: var(--success); font-weight: 600; font-size: 0.85rem;">${student.longest_streak || 0} ${student.longest_streak >= 7 ? '🏆' : ''}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Apply batch filter
+        function applyBatchFilter() {
+            const filterValue = document.getElementById('batchFilter').value;
+            currentBatchFilter = filterValue;
+            loadDashboard();
+        }
+
+        // Load current leaderboard
+        async function loadCurrentLeaderboard() {
+            try {
+                const url = currentBatchFilter === 'all' ? 
+                    '/admin/current-leaderboard' : 
+                    `/admin/current-leaderboard?batch=${currentBatchFilter}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                currentLeaderboardData = data.leaderboard || [];
+                console.log('Leaderboard data:', currentLeaderboardData); // Debug log
+                displayCurrentLeaderboard();
+            } catch (error) {
+                console.error('Failed to load current leaderboard:', error);
+                const tbody = document.getElementById('currentLeaderboardBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Failed to load leaderboard data</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Display current leaderboard
+        function displayCurrentLeaderboard() {
+            const tbody = document.getElementById('currentLeaderboardBody');
+            tbody.innerHTML = '';
+
+            if (!currentLeaderboardData || currentLeaderboardData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No leaderboard data available</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            currentLeaderboardData.forEach((user, index) => {
+                const row = document.createElement('tr');
+                
+                const rankDisplay = user.rank <= 3 ? 
+                    `<div class="rank-badge rank-${user.rank}">${user.rank}</div>` : 
+                    `<span>#${user.rank}</span>`;
+                
+                row.innerHTML = `
+                    <td>${rankDisplay}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 30px; height: 30px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.8rem;">
+                                ${(user.name || user.username).charAt(0).toUpperCase()}
+                            </div>
+                            <div>
+                                <strong style="font-size: 0.9rem; color: var(--gray-900);">
+                                    ${user.name || user.username}
+                                </strong>
+                                <div style="font-size: 0.75rem; color: var(--gray-600);">
+                                    ${user.rollNo ? `Roll: ${user.rollNo} • ` : ''}
+                                    <a href="https://leetcode.com/${user.username}/" target="_blank" 
+                                       style="color: var(--primary); text-decoration: none;" 
+                                       onmouseover="this.style.textDecoration='underline'" 
+                                       onmouseout="this.style.textDecoration='none'">
+                                        @${user.username}
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td><strong style="color: var(--primary);">${user.totalSolved}</strong></td>
+                    <td>
+                        <div style="font-size: 0.8rem;">
+                            <span style="color: var(--success);">${user.easy}</span>/
+                            <span style="color: var(--warning);">${user.medium}</span>/
+                            <span style="color: var(--danger);">${user.hard}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="font-size: 0.85rem;">
+                            <span style="color: var(--warning);">${user.currentStreak} 🔥</span><br>
+                            <span style="color: var(--success); font-size: 0.75rem;">${user.longestStreak} best</span>
+                        </div>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Mark notification as read
+        async function markAsRead(notificationId) {
+            try {
+                // Update notification in data locally
+                const notification = dashboardData.notifications.find(n => n.id === notificationId);
+                if (notification) {
+                    notification.is_read = true;
+                }
+                
+                // Reload notifications to reflect changes
+                loadNotifications();
+                
+                // Update counter
+                const currentCount = parseInt(document.getElementById('unreadNotifications').textContent);
+                document.getElementById('unreadNotifications').textContent = Math.max(0, currentCount - 1);
+            } catch (error) {
+                console.error('Failed to mark notification as read:', error);
+                showError('Failed to mark notification as read');
+            }
+        }
+
+        // Search user by name or username
+        async function searchUser() {
+            const searchTerm = document.getElementById('userSearchInput').value.trim();
+            if (!searchTerm) return;
+
+            try {
+                // First try to find by name or username
+                const response = await fetch(`/admin/search-student?q=${encodeURIComponent(searchTerm)}`);
+                const result = await response.json();
+                
+                if (result.username) {
+                    // Found a match, now get full user details
+                    const userResponse = await fetch(`/admin/user/${result.username}`);
+                    const userData = await userResponse.json();
+                    displayUserDetails(userData);
+                } else {
+                    // No match found
+                    const container = document.getElementById('userDetails');
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-user-slash"></i>
+                            <p>No student found matching "${searchTerm}"</p>
+                        </div>
+                    `;
+                    container.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Failed to search user:', error);
+            }
+        }
+
+        // Generate last 7 days activity including current date
+        function generateLast7DaysActivity(dailyStats, latestStats) {
+            const today = new Date();
+            const last7Days = [];
+            
+            // Generate last 7 days including today
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                
+                // Find matching stat or use latest for today
+                let stat = dailyStats.find(s => s.date === dateStr);
+                if (!stat && i === 0) {
+                    // Use latest stats for today if no record exists
+                    stat = latestStats;
+                }
+                
+                last7Days.push({
+                    date: dateStr,
+                    displayDate: date.toLocaleDateString(),
+                    isToday: i === 0,
+                    stat: stat
+                });
+            }
+            
+            if (last7Days.length === 0) {
+                return `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-chart-line"></i>
+                            <p>No recent activity data</p>
+                        </td>
+                    </tr>
+                `;
+            }
+            
+            return last7Days.map((day, index) => {
+                const prevDay = index > 0 ? last7Days[index - 1] : null;
+                const currentTotal = day.stat ? day.stat.total_solved || 0 : 0;
+                const prevTotal = prevDay && prevDay.stat ? prevDay.stat.total_solved || 0 : 0;
+                const dailyProgress = currentTotal - prevTotal;
+                
+                const todayClass = day.isToday ? 'style="background: rgba(37, 99, 235, 0.05); font-weight: 600;"' : '';
+                
+                return `
+                    <tr ${todayClass}>
+                        <td>${day.displayDate}${day.isToday ? ' (Today)' : ''}</td>
+                        <td><strong>${currentTotal}</strong></td>
+                        <td style="color: var(--success);">${day.stat ? day.stat.easy_solved || 0 : 0}</td>
+                        <td style="color: var(--warning);">${day.stat ? day.stat.medium_solved || 0 : 0}</td>
+                        <td style="color: var(--danger);">${day.stat ? day.stat.hard_solved || 0 : 0}</td>
+                        <td><span style="color: ${dailyProgress > 0 ? 'var(--success)' : 'var(--gray-500)'};">+${Math.max(0, dailyProgress)}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Display user details
+        function displayUserDetails(userData) {
+            const container = document.getElementById('userDetails');
+            
+            if (!userData.userInfo || userData.userInfo.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <p>User not found</p>
+                    </div>
+                `;
+                container.style.display = 'block';
+                return;
+            }
+
+            const user = userData.userInfo[0];
+            const streak = userData.streakInfo[0] || {};
+            const recentStats = userData.dailyStats.slice(0, 7);
+            const latestStats = userData.dailyStats && userData.dailyStats.length > 0 ? userData.dailyStats[0] : {};
+
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h3><i class="fas fa-user-circle"></i>Performance Details: ${user.username}</h3>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-primary" onclick="refreshSingleUser('${user.username}')" id="refreshUserBtn">
+                            <i class="fas fa-sync-alt"></i> Refresh Data
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="streak-info">
+                    <div class="streak-card">
+                        <h4>Last Activity</h4>
+                        <div class="text">${streak.last_activity_date ? getTimeAgo(new Date(streak.last_activity_date)) : 'Never'}</div>
+                    </div>
+                </div>
+                
+                <h4 style="margin: 2rem 0 1rem 0; color: var(--gray-900);"><i class="fas fa-chart-line"></i> Problem Solving Progress</h4>
+                <div style="background: white; padding: 1.5rem; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 2rem;">
+                    <canvas id="progressChart-${user.username}" style="max-height: 300px;"></canvas>
+                </div>
+                
+                <h4 style="margin: 2rem 0 1rem 0; color: var(--gray-900);"><i class="fas fa-chart-line"></i> Recent Activity (Last 7 Days)</h4>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Total Solved</th>
+                                <th>Easy</th>
+                                <th>Medium</th>
+                                <th>Hard</th>
+                                <th>Daily Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${generateLast7DaysActivity(userData.dailyStats, latestStats)}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            container.style.display = 'block';
+            
+            // Create progress chart
+            setTimeout(() => {
+                createProgressChart(user.username, userData.dailyStats);
+            }, 100);
+        }
+        
+        // Create progress chart for user
+        function createProgressChart(username, dailyStats) {
+            const ctx = document.getElementById(`progressChart-${username}`);
+            if (!ctx) return;
+            
+            const last30Days = dailyStats.slice(0, 30).sort((a, b) => new Date(a.date) - new Date(b.date));
+            const labels = last30Days.map(stat => new Date(stat.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+            const data = last30Days.map(stat => stat.total_solved || 0);
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total Problems Solved',
+                        data: data,
+                        borderColor: 'var(--primary)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: { font: { family: 'Inter' } }
+                        },
+                        x: {
+                            ticks: { font: { family: 'Inter' } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // View full history
+        async function viewFullHistory(username) {
+            try {
+                const response = await fetch(`/admin/user/${username}/full-history`);
+                const data = await response.json();
+                
+                const modal = document.createElement('div');
+                modal.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 2000; display: flex; align-items: center; justify-content: center;';
+                
+                const historyTable = data.history.map((row, index) => {
+                    const prevRow = data.history[index + 1];
+                    const dailyProgress = prevRow ? Math.max(0, (row.total_solved || 0) - (prevRow.total_solved || 0)) : row.total_solved || 0;
+                    const isToday = row.date === new Date().toISOString().split('T')[0];
+                    
+                    return `
+                        <tr style="${isToday ? 'background: rgba(37, 99, 235, 0.05); font-weight: 600;' : ''}">
+                            <td>${row.date}${isToday ? ' (Today)' : ''}</td>
+                            <td><strong>${row.total_solved || 0}</strong></td>
+                            <td style="color: var(--success);">${row.easy_solved || 0}</td>
+                            <td style="color: var(--warning);">${row.medium_solved || 0}</td>
+                            <td style="color: var(--danger);">${row.hard_solved || 0}</td>
+                            <td><span style="color: ${dailyProgress > 0 ? 'var(--success)' : 'var(--gray-500)'};">+${dailyProgress}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 2rem; border-radius: 12px; max-width: 90%; max-height: 80%; overflow-y: auto; width: 1000px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                            <h2 style="margin: 0; color: var(--gray-900);">Full History: ${username}</h2>
+                            <button onclick="this.closest('div').parentElement.remove()" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+                        </div>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: var(--gray-50);">
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Date</th>
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Total Solved</th>
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Easy</th>
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Medium</th>
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Hard</th>
+                                        <th style="padding: 0.75rem; text-align: left; border-bottom: 1px solid var(--border);">Daily Progress</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${historyTable}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(modal);
+                modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+            } catch (error) {
+                showError('Failed to fetch full history');
+            }
+        }
+
+        // Refresh single user data
+        async function refreshSingleUser(username) {
+            const btn = document.getElementById('refreshUserBtn');
+            const originalHTML = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                btn.disabled = true;
+                
+                const response = await fetch(`/admin/refresh-user/${username}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Data refreshed for ${username}`);
+                    setTimeout(() => {
+                        searchUser();
+                    }, 1000);
+                } else {
+                    showError(result.error || 'Failed to refresh user data');
+                }
+                
+            } catch (error) {
+                console.error('User refresh failed:', error);
+                showError('Failed to refresh user data');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // Refresh all data
+        async function refreshAllData() {
+            const btn = document.getElementById('refreshDataBtn');
+            const originalHTML = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Refreshing...';
+                btn.disabled = true;
+                
+                const response = await fetch('/admin/refresh-data', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(result.message);
+                    
+                    // Trigger inactive detection after refresh
+                    try {
+                        const inactiveResponse = await fetch('/admin/detect-inactive', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        const inactiveResult = await inactiveResponse.json();
+                        
+                        if (inactiveResponse.ok) {
+                            console.log(`Detected ${inactiveResult.count} inactive students`);
+                        }
+                    } catch (inactiveError) {
+                        console.error('Inactive detection failed:', inactiveError);
+                    }
+                    
+                    // Reload dashboard to show updated data
+                    setTimeout(() => {
+                        loadDashboard();
+                    }, 2000);
+                } else {
+                    showError(result.error || 'Failed to refresh data');
+                }
+            } catch (error) {
+                console.error('Manual refresh failed:', error);
+                showError('Failed to refresh data');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // Delete all data with confirmation
+        async function deleteAllData() {
+            const confirmation1 = confirm('⚠️ WARNING: This will delete ALL user data permanently!\n\nThis includes:\n- All users\n- All statistics\n- All streaks\n- All student details\n\nAre you sure you want to continue?');
+            
+            if (!confirmation1) return;
+            
+            const confirmation2 = confirm('🚨 FINAL WARNING: This action CANNOT be undone!\n\nType "DELETE" in the next prompt to confirm.');
+            
+            if (!confirmation2) return;
+            
+            const typeConfirm = prompt('Type "DELETE" (in capital letters) to confirm deletion of all data:');
+            
+            if (typeConfirm !== 'DELETE') {
+                showError('Deletion cancelled. You must type "DELETE" exactly.');
+                return;
+            }
+            
+            const btn = document.getElementById('deleteAllBtn');
+            const originalHTML = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Deleting...';
+                btn.disabled = true;
+                
+                const response = await fetch('/admin/delete-all-data', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage('All data deleted successfully!');
+                    setTimeout(() => {
+                        loadDashboard();
+                    }, 2000);
+                } else {
+                    showError(result.error || 'Failed to delete data');
+                }
+            } catch (error) {
+                console.error('Delete all data failed:', error);
+                showError('Failed to delete data');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // Fix data discrepancies
+        async function fixDataDiscrepancies() {
+            const btn = document.getElementById('fixDataBtn');
+            const originalHTML = btn.innerHTML;
+            
+            if (!confirm('This will run a comprehensive fix for all data issues. Continue?')) {
+                return;
+            }
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Fixing...';
+                btn.disabled = true;
+                
+                const response = await fetch('/admin/comprehensive-fix', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Fixed ${result.successCount} users successfully!`);
+                    setTimeout(() => {
+                        loadDashboard();
+                    }, 2000);
+                } else {
+                    showError(result.error || 'Failed to fix data');
+                }
+            } catch (error) {
+                console.error('Fix failed:', error);
+                showError('Failed to fix data discrepancies');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+
+        // Send warning email
+        async function sendWarningEmail(username) {
+            openEmailModal(username, `${username}@gmail.com`);
+        }
+
+        // Send bulk warning emails
+        async function sendBulkWarningEmails() {
+            if (!confirm('Send warning emails to all inactive students?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch('/admin/send-bulk-warnings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(result.message);
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to send bulk emails');
+                }
+            } catch (error) {
+                console.error('Bulk email error:', error);
+                showError('Failed to send bulk warning emails');
+            }
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--success);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                box-shadow: var(--shadow-lg);
+            `;
+            toast.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--danger);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+                box-shadow: var(--shadow-lg);
+            `;
+            toast.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 5000);
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/admin/logout', { method: 'POST' });
+                document.getElementById('dashboard').style.display = 'none';
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('loginForm').reset();
+                document.getElementById('loginError').textContent = '';
+            } catch (error) {
+                console.error('Logout failed:', error);
+            }
+        }
+
+        // Auto-refresh dashboard every 60 seconds
+        setInterval(() => {
+            if (document.getElementById('dashboard').style.display !== 'none') {
+                loadDashboard();
+            }
+        }, 60000);
+
+        // Add new student
+        async function addNewStudent() {
+            const username = document.getElementById('newUsername').value.trim();
+            const email = document.getElementById('newEmail').value.trim();
+            
+            if (!username || !email) {
+                showError('Please enter both username and email');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showError('Please enter a valid email address');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/admin/add-student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Student ${username} added successfully`);
+                    document.getElementById('newUsername').value = '';
+                    document.getElementById('newEmail').value = '';
+                    loadStudentManagement();
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to add student');
+                }
+            } catch (error) {
+                console.error('Add student error:', error);
+                showError('Failed to add student');
+            }
+        }
+
+        // Load student management data
+        async function loadStudentManagement() {
+            try {
+                const response = await fetch('/admin/students');
+                const data = await response.json();
+                
+                const tbody = document.getElementById('studentManagementBody');
+                tbody.innerHTML = '';
+                
+                if (!data.students || data.students.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" class="empty-state">
+                                <i class="fas fa-users"></i>
+                                <p>No students registered yet</p>
+                            </td>
+                        </tr>
+                    `;
+                    return;
+                }
+                
+                data.students.forEach(student => {
+                    const row = document.createElement('tr');
+                    const lastActivity = student.last_activity_date ? 
+                        getTimeAgo(new Date(student.last_activity_date)) : 'Never';
+                    
+                    row.innerHTML = `
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600;">
+                                    ${(student.name || student.username).charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <strong>
+                                        <a href="https://leetcode.com/${student.username}/" target="_blank" 
+                                           style="color: var(--primary); text-decoration: none; cursor: pointer;" 
+                                           onmouseover="this.style.textDecoration='underline'" 
+                                           onmouseout="this.style.textDecoration='none'">
+                                            ${student.username}
+                                        </a>
+                                    </strong>
+                                    <div style="font-size: 0.75rem; color: var(--gray-500);">LeetCode Student</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="email" id="email-${student.username}" value="${student.email || ''}" 
+                                       placeholder="Enter email" 
+                                       style="padding: 0.5rem; border: 1px solid var(--border); border-radius: 6px; font-size: 0.875rem; width: 200px;">
+                                <button onclick="updateStudentEmail('${student.username}')" 
+                                        class="btn btn-secondary" 
+                                        style="padding: 0.5rem; font-size: 0.8rem;" 
+                                        title="Update Email">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-primary">${student.total_solved || 0}</span></td>
+                        <td>
+                            <span style="color: ${student.current_streak > 0 ? 'var(--success)' : 'var(--gray-500)'};">
+                                ${student.current_streak || 0} ${student.current_streak > 0 ? '🔥' : ''}
+                            </span>
+                        </td>
+                        <td>${lastActivity}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button onclick="sendEmailToStudent('${student.username}', '${student.email || student.username + '@gmail.com'}')" 
+                                        class="btn btn-secondary" 
+                                        style="padding: 0.5rem; font-size: 0.8rem;" 
+                                        title="Send Email">
+                                    <i class="fas fa-envelope"></i>
+                                </button>
+                                <button onclick="removeStudent('${student.username}')" 
+                                        class="btn btn-secondary" 
+                                        style="padding: 0.5rem; font-size: 0.8rem; background: var(--danger); border-color: var(--danger);" 
+                                        title="Remove Student">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Failed to load student management:', error);
+                const tbody = document.getElementById('studentManagementBody');
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>Failed to load students</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Update student email
+        async function updateStudentEmail(username) {
+            const emailInput = document.getElementById(`email-${username}`);
+            const email = emailInput.value.trim();
+            
+            if (!email) {
+                showError('Please enter an email address');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showError('Please enter a valid email address');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/update-student-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Email updated for ${username}`);
+                } else {
+                    showError(result.error || 'Failed to update email');
+                }
+            } catch (error) {
+                console.error('Update email error:', error);
+                showError('Failed to update email');
+            }
+        }
+
+        // Send email to student
+        function sendEmailToStudent(username, email) {
+            openEmailModal(username, email);
+        }
+
+        // Open email modal
+        function openEmailModal(username, email) {
+            const modal = document.getElementById('emailModal');
+            const title = document.getElementById('emailModalTitle');
+            const form = document.getElementById('emailForm');
+            
+            title.textContent = `Send Warning Email to ${username}`;
+            document.getElementById('emailRecipient').value = email || `${username}@gmail.com`;
+            document.getElementById('emailSubject').value = 'LeetCode Activity Warning - Action Required';
+            document.getElementById('emailMessage').value = `Hi ${username},\n\nWe noticed you haven't been active on LeetCode recently. Regular practice is important for maintaining your coding skills.\n\nPlease resume your daily problem-solving to stay on track with your learning goals.\n\nBest regards,\nYour Instructor`;
+            
+            form.dataset.username = username;
+            modal.style.display = 'block';
+        }
+
+        // Close email modal
+        function closeEmailModal() {
+            const modal = document.getElementById('emailModal');
+            modal.style.display = 'none';
+            document.getElementById('emailForm').reset();
+        }
+
+        // Open CSV upload modal
+        function openCSVUploadModal() {
+            const modal = document.getElementById('csvUploadModal');
+            modal.style.display = 'block';
+        }
+
+        // Close CSV upload modal
+        function closeCSVUploadModal() {
+            const modal = document.getElementById('csvUploadModal');
+            modal.style.display = 'none';
+            document.getElementById('csvUploadForm').reset();
+        }
+
+        // Upload CSV file
+        async function uploadCSVFile() {
+            const fileInput = document.getElementById('csvFileUpload');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showError('Please select a CSV file');
+                return;
+            }
+            
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showError('Please select a valid CSV file');
+                return;
+            }
+            
+            const btn = document.getElementById('csvUploadSubmitBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                btn.disabled = true;
+                
+                const formData = new FormData();
+                formData.append('csvFile', file);
+                
+                const response = await fetch('/admin/upload-students-csv', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`CSV uploaded successfully! ${result.message}`);
+                    closeCSVUploadModal();
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to upload CSV');
+                }
+            } catch (error) {
+                console.error('CSV upload error:', error);
+                showError('Failed to upload CSV file');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Open quick add modal
+        function openQuickAddModal() {
+            const modal = document.getElementById('quickAddModal');
+            modal.style.display = 'block';
+            document.getElementById('quickUsername').focus();
+        }
+
+        // Close quick add modal
+        function closeQuickAddModal() {
+            const modal = document.getElementById('quickAddModal');
+            modal.style.display = 'none';
+            document.getElementById('quickAddForm').reset();
+        }
+
+        // Add student from modal
+        async function addStudentFromModal() {
+            const username = document.getElementById('quickUsername').value.trim();
+            const email = document.getElementById('quickEmail').value.trim();
+            
+            if (!username || !email) {
+                showError('Please enter both username and email');
+                return;
+            }
+            
+            if (!email.includes('@')) {
+                showError('Please enter a valid email address');
+                return;
+            }
+            
+            const btn = document.getElementById('quickAddBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                btn.disabled = true;
+                
+                const response = await fetch('/admin/add-student', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Student ${username} added successfully`);
+                    closeQuickAddModal();
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to add student');
+                }
+            } catch (error) {
+                console.error('Add student error:', error);
+                showError('Failed to add student');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Send email from modal
+        async function sendEmailFromModal() {
+            const form = document.getElementById('emailForm');
+            const username = form.dataset.username;
+            const email = document.getElementById('emailRecipient').value.trim();
+            const subject = document.getElementById('emailSubject').value.trim();
+            const message = document.getElementById('emailMessage').value.trim();
+            
+            if (!email || !subject || !message) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            const sendBtn = document.getElementById('sendEmailBtn');
+            const originalText = sendBtn.innerHTML;
+            
+            try {
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                sendBtn.disabled = true;
+                
+                await sendCustomEmailDirect(username, email, subject, message);
+                closeEmailModal();
+                
+            } catch (error) {
+                console.error('Send email error:', error);
+                showError('Failed to send email');
+            } finally {
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
+            }
+        }
+
+        // Send custom email directly
+        async function sendCustomEmailDirect(username, email, subject, message) {
+            try {
+                const response = await fetch('/admin/send-custom-email', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, email, subject, message })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Email sent to ${username}`);
+                } else {
+                    showError(result.error || 'Failed to send email');
+                }
+            } catch (error) {
+                console.error('Send email error:', error);
+                showError('Failed to send email');
+            }
+        }
+
+        // Remove student
+        async function removeStudent(username) {
+            if (!confirm(`Are you sure you want to remove ${username} from the system?\n\nThis will delete all their data permanently.`)) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/admin/remove-student/${username}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Student ${username} removed successfully`);
+                    loadStudentManagement();
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to remove student');
+                }
+            } catch (error) {
+                console.error('Remove student error:', error);
+                showError('Failed to remove student');
+            }
+        }
+
+        // Load student management on dashboard load
+        function initializeStudentManagement() {
+            // Auto-load student management functionality
+            console.log('Student management initialized');
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text, element) {
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = element.textContent;
+                element.textContent = 'Copied!';
+                element.style.background = 'var(--success)';
+                setTimeout(() => {
+                    element.textContent = originalText;
+                    element.style.background = 'var(--primary)';
+                }, 1500);
+            }).catch(() => {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const originalText = element.textContent;
+                element.textContent = 'Copied!';
+                element.style.background = 'var(--success)';
+                setTimeout(() => {
+                    element.textContent = originalText;
+                    element.style.background = 'var(--primary)';
+                }, 1500);
+            });
+        }
+
+        // Generate PDF Report
+        async function generatePDFReport() {
+            const btn = document.getElementById('pdfReportBtn');
+            const originalHTML = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                btn.disabled = true;
+                
+                // Fetch current leaderboard data with proper stats
+                const response = await fetch('/admin/current-leaderboard');
+                const data = await response.json();
+                
+                if (!data.leaderboard || data.leaderboard.length === 0) {
+                    showError('No student data available');
+                    return;
+                }
+                
+                // Generate PDF content
+                const pdfContent = generatePDFContent(data.leaderboard);
+                
+                // Create and download PDF
+                const printWindow = window.open('', '_blank');
+                printWindow.document.write(pdfContent);
+                printWindow.document.close();
+                
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
+                
+                showSuccessMessage('PDF report generated successfully!');
+                
+            } catch (error) {
+                console.error('PDF generation failed:', error);
+                showError('Failed to generate PDF report');
+            } finally {
+                btn.innerHTML = originalHTML;
+                btn.disabled = false;
+            }
+        }
+        
+        // Generate PDF HTML content
+        function generatePDFContent(students) {
+            const currentDate = new Date().toLocaleDateString();
+            const totalStudents = students.length;
+            const activeStudents = students.filter(s => s.currentStreak > 0).length;
+            const totalProblems = students.reduce((sum, s) => sum + (s.totalSolved || 0), 0);
+            const avgProblems = Math.round(totalProblems / totalStudents);
+            const topPerformer = students.sort((a, b) => (b.totalSolved || 0) - (a.totalSolved || 0))[0];
+            
+            return `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>LeetCode Analytics Report - ${currentDate}</title>
+                    <style>
+                        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+                        * { margin: 0; padding: 0; box-sizing: border-box; }
+                        body { 
+                            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                            background: #0f0f23;
+                            color: #e6e6e6;
+                            line-height: 1.6;
+                            padding: 0;
+                        }
+                        .report-container {
+                            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+                            min-height: 100vh;
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        .report-container::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: radial-gradient(circle at 20% 20%, rgba(255, 165, 0, 0.1) 0%, transparent 50%),
+                                        radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
+                                        radial-gradient(circle at 40% 60%, rgba(255, 20, 147, 0.1) 0%, transparent 50%);
+                        }
+                        .content {
+                            position: relative;
+                            z-index: 1;
+                            padding: 20px;
+                            max-width: 100%;
+                            overflow-x: auto;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 50px;
+                            padding: 60px 40px;
+                            background: rgba(255, 255, 255, 0.02);
+                            border-radius: 24px;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            backdrop-filter: blur(20px);
+                        }
+                        .logo {
+                            font-size: 4rem;
+                            margin-bottom: 20px;
+                            background: linear-gradient(135deg, #ffa116, #ff6b35, #f7931e);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                        }
+                        .title {
+                            font-size: 3.5rem;
+                            font-weight: 800;
+                            margin-bottom: 15px;
+                            background: linear-gradient(135deg, #ffffff, #e6e6e6);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                        }
+                        .subtitle {
+                            font-size: 1.3rem;
+                            color: #a0a0a0;
+                            font-weight: 400;
+                        }
+                        .stats-section {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: 25px;
+                            margin-bottom: 60px;
+                        }
+                        .stat-card {
+                            background: rgba(255, 255, 255, 0.03);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            border-radius: 20px;
+                            padding: 35px 25px;
+                            text-align: center;
+                            backdrop-filter: blur(20px);
+                            position: relative;
+                            overflow: hidden;
+                        }
+                        .stat-card::before {
+                            content: '';
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            height: 4px;
+                            background: linear-gradient(90deg, #ffa116, #ff6b35, #f7931e);
+                        }
+                        .stat-number {
+                            font-size: 3.2rem;
+                            font-weight: 800;
+                            margin-bottom: 12px;
+                            background: linear-gradient(135deg, #ffa116, #ff6b35);
+                            -webkit-background-clip: text;
+                            -webkit-text-fill-color: transparent;
+                            background-clip: text;
+                        }
+                        .stat-label {
+                            font-size: 1.1rem;
+                            color: #b0b0b0;
+                            font-weight: 500;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                        }
+                        .students-section {
+                            margin-bottom: 50px;
+                        }
+                        .section-header {
+                            display: flex;
+                            align-items: center;
+                            gap: 15px;
+                            margin-bottom: 40px;
+                            padding-bottom: 20px;
+                            border-bottom: 2px solid rgba(255, 161, 22, 0.3);
+                        }
+                        .section-title {
+                            font-size: 2.2rem;
+                            font-weight: 700;
+                            color: #ffffff;
+                        }
+                        .section-icon {
+                            font-size: 2rem;
+                            color: #ffa116;
+                        }
+                        .students-table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            background: rgba(255, 255, 255, 0.02);
+                            border-radius: 16px;
+                            overflow: hidden;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            table-layout: fixed;
+                        }
+                        .students-table th {
+                            background: rgba(255, 161, 22, 0.1);
+                            color: #ffa116;
+                            padding: 12px 8px;
+                            font-weight: 600;
+                            font-size: 0.85rem;
+                            text-transform: uppercase;
+                            letter-spacing: 0.3px;
+                            border-bottom: 2px solid rgba(255, 161, 22, 0.2);
+                            width: 20%;
+                        }
+                        .students-table td {
+                            padding: 10px 8px;
+                            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                            font-size: 0.8rem;
+                            word-wrap: break-word;
+                            overflow: hidden;
+                        }
+                        .students-table tr:hover {
+                            background: rgba(255, 255, 255, 0.02);
+                        }
+                        .student-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                        }
+                        .student-avatar {
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 8px;
+                            background: linear-gradient(135deg, #ffa116, #ff6b35);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: #000;
+                            font-weight: 700;
+                            font-size: 0.8rem;
+                        }
+                        .student-name {
+                            font-weight: 600;
+                            color: #ffffff;
+                            font-size: 1rem;
+                        }
+                        .rank-badge {
+                            display: inline-flex;
+                            align-items: center;
+                            justify-content: center;
+                            width: 35px;
+                            height: 35px;
+                            border-radius: 10px;
+                            font-weight: 700;
+                            font-size: 0.9rem;
+                        }
+                        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #000; }
+                        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e5e7eb); color: #000; }
+                        .rank-3 { background: linear-gradient(135deg, #cd7f32, #d97706); color: #fff; }
+                        .rank-other { background: rgba(255, 255, 255, 0.1); color: #fff; }
+                        .problems-count {
+                            font-weight: 700;
+                            font-size: 1.1rem;
+                            color: #ffa116;
+                        }
+                        .difficulty-stats {
+                            display: flex;
+                            gap: 8px;
+                            font-size: 0.9rem;
+                        }
+                        .easy-count { color: #00d084; font-weight: 600; }
+                        .medium-count { color: #ffa116; font-weight: 600; }
+                        .hard-count { color: #ff375f; font-weight: 600; }
+                        .streak-info {
+                            display: flex;
+                            align-items: center;
+                            gap: 5px;
+                            font-weight: 600;
+                        }
+                        .streak-fire {
+                            color: #ff6b35;
+                        }
+                        .footer {
+                            text-align: center;
+                            padding: 40px;
+                            margin-top: 50px;
+                            background: rgba(255, 255, 255, 0.02);
+                            border-radius: 20px;
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            color: #888;
+                        }
+                        .footer-logo {
+                            font-size: 1.5rem;
+                            margin-bottom: 10px;
+                            color: #ffa116;
+                        }
+                        @media print {
+                            body { background: #0f0f23 !important; }
+                            .report-container { background: #0f0f23 !important; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="report-container">
+                        <div class="content">
+                            <div class="header">
+                                <div class="logo">⚡</div>
+                                <h1 class="title">LeetCode Analytics</h1>
+                                <p class="subtitle">Performance Report • ${currentDate}</p>
+                            </div>
+                            
+                            <div class="stats-section">
+                                <div class="stat-card">
+                                    <div class="stat-number">${totalStudents}</div>
+                                    <div class="stat-label">Students</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${activeStudents}</div>
+                                    <div class="stat-label">Active</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${totalProblems}</div>
+                                    <div class="stat-label">Problems</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number">${avgProblems}</div>
+                                    <div class="stat-label">Average</div>
+                                </div>
+                            </div>
+                            
+                            <div class="students-section">
+                                <div class="section-header">
+                                    <span class="section-icon">👥</span>
+                                    <h2 class="section-title">Student Rankings</h2>
+                                </div>
+                                
+                                <table class="students-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Student</th>
+                                            <th>Total</th>
+                                            <th>Difficulty</th>
+                                            <th>Streak</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${students.sort((a, b) => (b.totalSolved || 0) - (a.totalSolved || 0)).map((student, index) => {
+                                            const rank = index + 1;
+                                            const rankClass = rank <= 3 ? `rank-${rank}` : 'rank-other';
+                                            return `
+                                                <tr>
+                                                    <td>
+                                                        <div class="rank-badge ${rankClass}">${rank}</div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="student-info">
+                                                            <div class="student-avatar">
+                                                                ${(student.name || student.username).charAt(0).toUpperCase()}
+                                                            </div>
+                                                            <div class="student-name">
+                                                                <div style="font-weight: 700; font-size: 1rem; margin-bottom: 0.25rem;">${student.name || student.username}</div>
+                                                                <div style="font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 0.5rem;">
+                                                                    ${student.rollNo ? `<span>Roll: ${student.rollNo}</span>` : ''}
+                                                                    ${student.rollNo ? '<span>•</span>' : ''}
+                                                                    <span>@${student.username}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <span class="problems-count">${student.totalSolved || 0}</span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="difficulty-stats">
+                                                            <span class="easy-count">${student.easy || 0}E</span>
+                                                            <span class="medium-count">${student.medium || 0}M</span>
+                                                            <span class="hard-count">${student.hard || 0}H</span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="streak-info">
+                                                            <span class="streak-fire">🔥</span>
+                                                            <span>${student.currentStreak || 0}</span>
+                                                        </div>
+                                                    </td>
+
+                                                </tr>
+                                            `;
+                                        }).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="footer">
+                                <div class="footer-logo">⚡</div>
+                                <p>Generated by LeetCode Analytics Pro</p>
+                                <p>${currentDate} • ${totalStudents} Students Analyzed</p>
+                            </div>
+                        </div>
+                    </div>
+                </body>
+                </html>
+            `;
+        }
+
+        // Handle CSV file upload
+        async function handleCSVUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                showError('Please select a CSV file');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('csvFile', file);
+            
+            try {
+                const response = await fetch('/admin/upload-student-emails', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Successfully processed ${result.processed} students from CSV`);
+                    loadDashboard();
+                } else {
+                    showError(result.error || 'Failed to process CSV file');
+                }
+            } catch (error) {
+                console.error('CSV upload error:', error);
+                showError('Failed to upload CSV file');
+            } finally {
+                // Reset file input
+                event.target.value = '';
+            }
+        }
+
+        // Section Modal Functions
+        function openLeaderboardModal() {
+            document.getElementById('sectionModalTitle').innerHTML = '<i class="fas fa-trophy" style="color: #fbbf24;"></i>Current Leaderboard';
+            const content = generateLeaderboardModalContent();
+            document.getElementById('sectionModalContent').innerHTML = content;
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        function openInactiveModal() {
+            document.getElementById('sectionModalTitle').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: #ef4444;"></i>Inactive Students';
+            const content = generateInactiveModalContent();
+            document.getElementById('sectionModalContent').innerHTML = content;
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        function openTopPerformersModal() {
+            document.getElementById('sectionModalTitle').innerHTML = '<i class="fas fa-star" style="color: #10b981;"></i>Top Performers';
+            const content = generateTopPerformersModalContent();
+            document.getElementById('sectionModalContent').innerHTML = content;
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        function openStudentSearchModal() {
+            document.getElementById('sectionModalTitle').innerHTML = '<i class="fas fa-search" style="color: #0ea5e9;"></i>Student Search';
+            const content = generateStudentSearchModalContent();
+            document.getElementById('sectionModalContent').innerHTML = content;
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        function closeSectionModal() {
+            document.getElementById('sectionModal').style.display = 'none';
+        }
+
+        // Show user stats modal (simple approach)
+        function showUserStats(username, name) {
+            // Find user data from existing leaderboard
+            const userData = currentLeaderboardData.find(u => u.username === username);
+            
+            document.getElementById('sectionModalTitle').innerHTML = `<i class="fas fa-user" style="color: #667eea;"></i>${name} - Profile`;
+            document.getElementById('sectionModalContent').innerHTML = `
+                <div style="background: rgba(255,255,255,0.95); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px;">
+                        <h2 style="margin: 0 0 0.5rem 0; font-size: 1.8rem; font-weight: 700;">${name}</h2>
+                        <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">@${username}</p>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+                        <div style="text-align: center; padding: 1rem; background: #f0f9ff; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #0ea5e9;">${userData?.totalSolved || 0}</div>
+                            <div style="color: #64748b;">Total Solved</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #f0fdf4; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #10b981;">${userData?.contestRating || 0}</div>
+                            <div style="color: #64748b;">Contest Rating</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #fefce8; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #eab308;">${userData?.easy || 0}</div>
+                            <div style="color: #64748b;">Easy</div>
+                        </div>
+                        <div style="text-align: center; padding: 1rem; background: #fef2f2; border-radius: 8px;">
+                            <div style="font-size: 2rem; font-weight: 700; color: #ef4444;">${userData?.hard || 0}</div>
+                            <div style="color: #64748b;">Hard</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('sectionModal').style.display = 'block';
+        }
+
+        // Original submission history function (keep as backup)
+        async function showSubmissionHistory(username, name) {
+            document.getElementById('sectionModalTitle').innerHTML = `<i class="fas fa-history" style="color: #667eea;"></i>${name} - Submission History`;
+            document.getElementById('sectionModalContent').innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #667eea; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem;">Loading submission history...</p>
+                </div>
+            `;
+            document.getElementById('sectionModal').style.display = 'block';
+            
+            try {
+                const response = await fetch(`/admin/submission-history/${username}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    displaySubmissionTable(data, name);
+                } else {
+                    document.getElementById('sectionModalContent').innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Failed to load submission history</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                document.getElementById('sectionModalContent').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>Network error: ${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displaySubmissionTable(data, name) {
+            const entries = Object.entries(data.submissions || {}).reverse();
+            
+            document.getElementById('sectionModalContent').innerHTML = `
+                <div style="background: rgba(255,255,255,0.95); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                    <div style="text-align: center; margin-bottom: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 12px;">
+                        <h2 style="margin: 0 0 0.5rem 0; font-size: 1.8rem; font-weight: 700;">${name}</h2>
+                        <p style="margin: 0; font-size: 1.1rem; opacity: 0.9;">@${data.username}</p>
+                        <div style="margin-top: 1rem; font-size: 1.3rem; font-weight: 600;">
+                            Total Submissions: ${data.total} | Active Days: ${entries.length}
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin: 0 0 1rem 0; color: #1e293b; font-size: 1.2rem; font-weight: 600;">
+                        <i class="fas fa-table" style="color: #667eea; margin-right: 0.5rem;"></i>
+                        Day-wise Submissions (${entries.length} days)
+                    </h3>
+                    
+                    <div style="max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                        <table style="width: 100%; border-collapse: collapse;">
+                            <thead style="background: #f8fafc; position: sticky; top: 0;">
+                                <tr>
+                                    <th style="padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #374151;">Date</th>
+                                    <th style="padding: 0.75rem 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #374151;">Submissions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${entries.map(([date, count]) => `
+                                    <tr style="border-bottom: 1px solid #f1f5f9;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
+                                        <td style="padding: 0.75rem 1rem; color: #1e293b; font-weight: 500;">${date}</td>
+                                        <td style="padding: 0.75rem 1rem; text-align: center; color: #667eea; font-weight: 600; font-size: 1.1rem;">${count}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateLeaderboardModalContent() {
+            if (!currentLeaderboardData || currentLeaderboardData.length === 0) {
+                return '<div style="text-align: center; padding: 3rem; color: #64748b;"><i class="fas fa-chart-line" style="font-size: 3rem; margin-bottom: 1rem;"></i><p>No leaderboard data available</p></div>';
+            }
+
+            return `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                    ${currentLeaderboardData.map((user, index) => {
+                        const rankDisplay = user.rank <= 3 ? 
+                            `<div style="width: 60px; height: 60px; border-radius: 50%; background: ${user.rank === 1 ? 'linear-gradient(135deg, #ffd700, #ffed4e)' : user.rank === 2 ? 'linear-gradient(135deg, #c0c0c0, #e5e7eb)' : 'linear-gradient(135deg, #cd7f32, #d97706)'}; display: flex; align-items: center; justify-content: center; color: ${user.rank === 2 ? '#374151' : user.rank === 3 ? '#fff' : '#92400e'}; font-weight: 700; font-size: 1.5rem;">${user.rank}</div>` : 
+                            `<div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(99, 102, 241, 0.1); display: flex; align-items: center; justify-content: center; color: #6366f1; font-weight: 700; font-size: 1.2rem;">#${user.rank}</div>`;
+                        
+                        return `
+                            <div style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); transition: transform 0.3s ease; border: 2px solid rgba(255,255,255,0.5);" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem;">
+                                    ${rankDisplay}
+                                    <div style="flex: 1;">
+                                        <h3 style="margin: 0 0 0.5rem 0; color: #1e293b; font-size: 1.3rem; font-weight: 600; cursor: pointer; transition: color 0.3s;" onclick="showSubmissionHistory('${user.username}', '${user.name || user.username}')" onmouseover="this.style.color='#667eea'" onmouseout="this.style.color='#1e293b'">${user.name || user.username}</h3>
+                                        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                                            ${user.rollNo ? `Roll: ${user.rollNo} • ` : ''}<a href="https://leetcode.com/${user.username}/" target="_blank" style="color: #6366f1; text-decoration: none;">@${user.username}</a>
+                                        </div>
+                                        <div style="color: #059669; font-weight: 600; font-size: 1.1rem;">${user.totalSolved} problems solved</div>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1rem;">
+                                    <div style="text-align: center; padding: 0.75rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                                        <div style="color: #10b981; font-weight: 600; font-size: 1.2rem;">${user.easy}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">Easy</div>
+                                    </div>
+                                    <div style="text-align: center; padding: 0.75rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                                        <div style="color: #f59e0b; font-weight: 600; font-size: 1.2rem;">${user.medium}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">Medium</div>
+                                    </div>
+                                    <div style="text-align: center; padding: 0.75rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
+                                        <div style="color: #ef4444; font-weight: 600; font-size: 1.2rem;">${user.hard}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">Hard</div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 1.2rem;">🔥</span>
+                                        <span style="color: #1e293b; font-weight: 600;">${user.currentStreak || 0} current</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                        <span style="font-size: 1.2rem;">🏆</span>
+                                        <span style="color: #1e293b; font-weight: 600;">${user.longestStreak || 0} best</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function generateInactiveModalContent() {
+            const inactiveData = dashboardData.inactiveStudents || [];
+            if (inactiveData.length === 0) {
+                return '<div style="text-align: center; padding: 3rem; color: #64748b;"><i class="fas fa-check-circle" style="font-size: 3rem; margin-bottom: 1rem; color: #10b981;"></i><p>All students are active! 🎉</p></div>';
+            }
+
+            return `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+                    ${inactiveData.map(student => {
+                        const daysInactive = student.days_inactive === 999 ? 'Never' : Math.floor(student.days_inactive);
+                        return `
+                            <div style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 5px solid #ef4444; transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                                    <div style="width: 50px; height: 50px; border-radius: 50%; background: linear-gradient(135deg, #ef4444, #dc2626); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 1.2rem;">
+                                        ${(student.name || student.username).charAt(0).toUpperCase()}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h3 style="margin: 0 0 0.5rem 0; color: #1e293b; font-size: 1.2rem; font-weight: 600;">${student.name || student.username}</h3>
+                                        <div style="color: #64748b; font-size: 0.9rem;">
+                                            ${student.roll_no ? `Roll: ${student.roll_no} • ` : ''}<a href="https://leetcode.com/${student.username}/" target="_blank" style="color: #ef4444; text-decoration: none;">@${student.username}</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                                    <div style="text-align: center;">
+                                        <div style="color: #ef4444; font-weight: 700; font-size: 1.5rem;">${daysInactive === 'Never' ? '∞' : daysInactive}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">Days Inactive</div>
+                                    </div>
+                                    <div style="text-align: center;">
+                                        <div style="color: #6366f1; font-weight: 600; font-size: 1.2rem;">${student.total_solved || 0}</div>
+                                        <div style="color: #64748b; font-size: 0.8rem;">Problems Solved</div>
+                                    </div>
+                                </div>
+                                <button onclick="sendWarningEmail('${student.username}')" style="width: 100%; padding: 0.75rem; background: linear-gradient(135deg, #ef4444, #dc2626); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fas fa-envelope"></i> Send Warning Email
+                                </button>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function generateTopPerformersModalContent() {
+            const topData = dashboardData.topStreaks || [];
+            if (topData.length === 0) {
+                return '<div style="text-align: center; padding: 3rem; color: #64748b;"><i class="fas fa-star" style="font-size: 3rem; margin-bottom: 1rem;"></i><p>No performance data available</p></div>';
+            }
+
+            return `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem;">
+                    ${topData.map((student, index) => {
+                        const medals = ['🥇', '🥈', '🥉'];
+                        const medal = index < 3 ? medals[index] : '🏅';
+                        return `
+                            <div style="background: rgba(255,255,255,0.8); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); border-left: 5px solid #10b981; transition: transform 0.3s ease; position: relative;" onmouseover="this.style.transform='translateY(-5px)'" onmouseout="this.style.transform='translateY(0)'">
+                                <div style="position: absolute; top: 1rem; right: 1rem; font-size: 2rem;">${medal}</div>
+                                <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem;">
+                                    <div style="width: 60px; height: 60px; border-radius: 50%; background: linear-gradient(135deg, #10b981, #059669); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem;">
+                                        #${index + 1}
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <h3 style="margin: 0 0 0.5rem 0; color: #1e293b; font-size: 1.3rem; font-weight: 600;">${student.name || student.username}</h3>
+                                        <div style="color: #64748b; font-size: 0.9rem; margin-bottom: 0.25rem;">
+                                            ${student.roll_no ? `Roll: ${student.roll_no} • ` : ''}<a href="https://leetcode.com/${student.username}/" target="_blank" style="color: #10b981; text-decoration: none;">@${student.username}</a>
+                                        </div>
+                                        <div style="color: #059669; font-weight: 600; font-size: 1.1rem;">${student.total_solved || 0} problems solved</div>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                                    <div style="text-align: center; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 12px;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <span style="font-size: 1.5rem;">🔥</span>
+                                            <span style="color: #f59e0b; font-weight: 700; font-size: 1.5rem;">${student.current_streak || 0}</span>
+                                        </div>
+                                        <div style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Current Streak</div>
+                                    </div>
+                                    <div style="text-align: center; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 12px;">
+                                        <div style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <span style="font-size: 1.5rem;">🏆</span>
+                                            <span style="color: #10b981; font-weight: 700; font-size: 1.5rem;">${student.longest_streak || 0}</span>
+                                        </div>
+                                        <div style="color: #64748b; font-size: 0.9rem; font-weight: 500;">Longest Streak</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            `;
+        }
+
+        function generateStudentSearchModalContent() {
+            return `
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <div style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                            <input type="text" id="modalSearchInput" placeholder="Search by name, roll number, or username..." style="flex: 1; padding: 1rem; border: 2px solid #e2e8f0; border-radius: 12px; background: #f8fafc; color: #1e293b; font-size: 1rem; transition: all 0.3s ease;" onkeypress="if(event.key==='Enter') searchStudentInModal()" onfocus="this.style.borderColor='#0ea5e9'; this.style.background='white'" onblur="this.style.borderColor='#e2e8f0'; this.style.background='#f8fafc'">
+                            <button onclick="searchStudentInModal()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fas fa-search"></i> Search
+                            </button>
+                        </div>
+                        <div style="text-align: center; color: #64748b; font-size: 0.9rem;">
+                            <i class="fas fa-info-circle" style="margin-right: 0.5rem;"></i>
+                            Search by student name, roll number, or LeetCode username
+                        </div>
+                    </div>
+                    
+                    <div id="modalSearchResults" style="min-height: 200px;">
+                        <div style="text-align: center; padding: 3rem; color: #64748b;">
+                            <i class="fas fa-search" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>Enter a search term to find student details</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function searchStudentInModal() {
+            const searchTerm = document.getElementById('modalSearchInput').value.trim();
+            const resultsDiv = document.getElementById('modalSearchResults');
+            
+            if (!searchTerm) {
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Please enter a search term</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; padding: 2rem; color: #64748b;">
+                    <div style="display: inline-block; width: 40px; height: 40px; border: 3px solid #e2e8f0; border-top: 3px solid #0ea5e9; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem;">Searching for "${searchTerm}"...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch(`/admin/search-student?q=${encodeURIComponent(searchTerm)}`);
+                const result = await response.json();
+                
+                if (result.username) {
+                    const userResponse = await fetch(`/admin/user/${result.username}`);
+                    const userData = await userResponse.json();
+                    displayModalUserDetails(userData, result);
+                } else {
+                    resultsDiv.innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: #64748b;">
+                            <i class="fas fa-user-slash" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                            <p>No student found matching "${searchTerm}"</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">Try searching by name, roll number, or LeetCode username</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                        <p>Search failed. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayModalUserDetails(userData, searchResult) {
+            const resultsDiv = document.getElementById('modalSearchResults');
+            
+            if (!userData.userInfo || userData.userInfo.length === 0) {
+                resultsDiv.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #64748b;">
+                        <i class="fas fa-user-slash" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>User data not found</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const user = userData.userInfo[0];
+            const streak = userData.streakInfo[0] || {};
+            const recentStats = userData.dailyStats.slice(0, 7);
+            
+            resultsDiv.innerHTML = `
+                <div style="background: rgba(255,255,255,0.9); border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden;">
+                    <!-- Student Header -->
+                    <div style="background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; padding: 2rem; text-align: center;">
+                        <div style="width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2.5rem; font-weight: 700;">
+                            ${(searchResult.name || user.username).charAt(0).toUpperCase()}
+                        </div>
+                        <h2 style="margin: 0 0 0.5rem 0; font-size: 2rem; font-weight: 700;">${searchResult.name || user.username}</h2>
+                        <div style="font-size: 1.1rem; opacity: 0.9; margin-bottom: 0.5rem;">
+                            ${searchResult.rollNo ? `Roll: ${searchResult.rollNo} • ` : ''}<a href="https://leetcode.com/${user.username}/" target="_blank" style="color: white; text-decoration: none;">@${user.username}</a>
+                        </div>
+                        <div style="font-size: 0.9rem; opacity: 0.8;">${searchResult.email || 'No email available'}</div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div style="padding: 2rem;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(16, 185, 129, 0.1); border-radius: 12px; border: 2px solid rgba(16, 185, 129, 0.2);">
+                                <div style="color: #10b981; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem;">${user.total_solved || 0}</div>
+                                <div style="color: #64748b; font-weight: 600;">Total Problems</div>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border: 2px solid rgba(245, 158, 11, 0.2);">
+                                <div style="color: #f59e0b; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem;">${streak.current_streak || 0}</div>
+                                <div style="color: #64748b; font-weight: 600;">Current Streak</div>
+                            </div>
+                            <div style="text-align: center; padding: 1.5rem; background: rgba(99, 102, 241, 0.1); border-radius: 12px; border: 2px solid rgba(99, 102, 241, 0.2);">
+                                <div style="color: #6366f1; font-weight: 700; font-size: 2rem; margin-bottom: 0.5rem;">${streak.longest_streak || 0}</div>
+                                <div style="color: #64748b; font-weight: 600;">Longest Streak</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Difficulty Breakdown -->
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                            <div style="text-align: center; padding: 1rem; background: rgba(16, 185, 129, 0.1); border-radius: 8px;">
+                                <div style="color: #10b981; font-weight: 600; font-size: 1.5rem;">${user.easy_solved || 0}</div>
+                                <div style="color: #64748b; font-size: 0.9rem;">Easy</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: rgba(245, 158, 11, 0.1); border-radius: 8px;">
+                                <div style="color: #f59e0b; font-weight: 600; font-size: 1.5rem;">${user.medium_solved || 0}</div>
+                                <div style="color: #64748b; font-size: 0.9rem;">Medium</div>
+                            </div>
+                            <div style="text-align: center; padding: 1rem; background: rgba(239, 68, 68, 0.1); border-radius: 8px;">
+                                <div style="color: #ef4444; font-weight: 600; font-size: 1.5rem;">${user.hard_solved || 0}</div>
+                                <div style="color: #64748b; font-size: 0.9rem;">Hard</div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <button onclick="refreshSingleUser('${user.username}')" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #10b981, #059669); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fas fa-sync-alt"></i> Refresh Data
+                            </button>
+                            <button onclick="sendEmailToStudent('${user.username}', '${searchResult.email || user.username + '@gmail.com'}')" style="padding: 0.75rem 1.5rem; background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                <i class="fas fa-envelope"></i> Send Email
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // User History Modal
+        async function openUserHistoryModal(username, name, rollNo) {
+            document.getElementById('sectionModalTitle').innerHTML = `<i class="fas fa-chart-line" style="color: #8b5cf6;"></i>${name} - Submission History`;
+            document.getElementById('sectionModalContent').innerHTML = `
+                <div style="text-align: center; padding: 3rem; color: #64748b;">
+                    <div style="display: inline-block; width: 50px; height: 50px; border: 4px solid #e2e8f0; border-top: 4px solid #8b5cf6; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 1rem;">Loading submission history for ${name}...</p>
+                </div>
+            `;
+            document.getElementById('sectionModal').style.display = 'block';
+            
+            try {
+                const response = await fetch(`/admin/user-history/${username}`);
+                const historyData = await response.json();
+                
+                if (response.ok) {
+                    displayUserHistoryContent(historyData, name, rollNo);
+                } else {
+                    document.getElementById('sectionModalContent').innerHTML = `
+                        <div style="text-align: center; padding: 3rem; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                            <p>Failed to load submission history</p>
+                            <p style="font-size: 0.9rem; margin-top: 0.5rem;">${historyData.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading user history:', error);
+                document.getElementById('sectionModalContent').innerHTML = `
+                    <div style="text-align: center; padding: 3rem; color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle" style="font-size: 3rem; margin-bottom: 1rem;"></i>
+                        <p>Failed to load submission history</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayUserHistoryContent(historyData, name, rollNo) {
+            const monthlyData = Object.entries(historyData.monthlyTotals).map(([month, count]) => ({ month, count }));
+            const dailyEntries = Object.entries(historyData.dailySubmissions).slice(-30); // Last 30 days
+            
+            document.getElementById('sectionModalContent').innerHTML = `
+                <div style="max-width: 1200px; margin: 0 auto;">
+                    <!-- User Header -->
+                    <div style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; padding: 2rem; border-radius: 16px; margin-bottom: 2rem; text-align: center;">
+                        <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 2rem; font-weight: 700;">
+                            ${name.charAt(0).toUpperCase()}
+                        </div>
+                        <h2 style="margin: 0 0 0.5rem 0; font-size: 1.8rem; font-weight: 700;">${name}</h2>
+                        <div style="font-size: 1rem; opacity: 0.9; margin-bottom: 1rem;">
+                            ${rollNo ? `Roll: ${rollNo} • ` : ''}@${historyData.username}
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700;">${historyData.totalSubmissions}</div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">Total Submissions</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700;">${Object.keys(historyData.dailySubmissions).length}</div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">Active Days</div>
+                            </div>
+                            <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: 8px;">
+                                <div style="font-size: 1.5rem; font-weight: 700;">${historyData.firstSubmission || 'N/A'}</div>
+                                <div style="font-size: 0.9rem; opacity: 0.8;">First Submission</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Charts Section -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+                        <!-- Monthly Bar Chart -->
+                        <div style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                            <h3 style="margin: 0 0 1.5rem 0; color: #1e293b; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-chart-bar" style="color: #8b5cf6;"></i>Monthly Submissions
+                            </h3>
+                            <canvas id="monthlyChart" style="width: 100%; height: 300px;"></canvas>
+                        </div>
+                        
+                        <!-- Daily Line Chart -->
+                        <div style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                            <h3 style="margin: 0 0 1.5rem 0; color: #1e293b; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                <i class="fas fa-chart-line" style="color: #10b981;"></i>Daily Trend (Last 30 Days)
+                            </h3>
+                            <canvas id="dailyChart" style="width: 100%; height: 300px;"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity Table -->
+                    <div style="background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);">
+                        <h3 style="margin: 0 0 1.5rem 0; color: #1e293b; font-size: 1.3rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                            <i class="fas fa-table" style="color: #f59e0b;"></i>Recent Activity (Last 30 Days)
+                        </h3>
+                        <div style="max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead style="background: #f8fafc; position: sticky; top: 0;">
+                                    <tr>
+                                        <th style="padding: 1rem; text-align: left; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #374151;">Date</th>
+                                        <th style="padding: 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #374151;">Submissions</th>
+                                        <th style="padding: 1rem; text-align: center; border-bottom: 1px solid #e2e8f0; font-weight: 600; color: #374151;">Activity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${dailyEntries.reverse().map(([date, count]) => `
+                                        <tr style="border-bottom: 1px solid #f1f5f9;">
+                                            <td style="padding: 0.75rem 1rem; color: #1e293b; font-weight: 500;">${date}</td>
+                                            <td style="padding: 0.75rem 1rem; text-align: center; color: #8b5cf6; font-weight: 600;">${count}</td>
+                                            <td style="padding: 0.75rem 1rem; text-align: center;">
+                                                <div style="display: inline-flex; align-items: center; gap: 0.25rem;">
+                                                    ${Array(Math.min(count, 10)).fill().map(() => '<div style="width: 8px; height: 8px; background: #10b981; border-radius: 50%;"></div>').join('')}
+                                                    ${count > 10 ? `<span style="font-size: 0.8rem; color: #64748b; margin-left: 0.5rem;">+${count - 10}</span>` : ''}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Create charts after DOM is updated
+            setTimeout(() => {
+                createMonthlyChart(monthlyData);
+                createDailyChart(dailyEntries);
+            }, 100);
+        }
+
+        function createMonthlyChart(monthlyData) {
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: monthlyData.map(d => d.month),
+                    datasets: [{
+                        label: 'Submissions',
+                        data: monthlyData.map(d => d.count),
+                        backgroundColor: 'rgba(139, 92, 246, 0.8)',
+                        borderColor: 'rgb(139, 92, 246)',
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function createDailyChart(dailyEntries) {
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dailyEntries.map(([date]) => date),
+                    datasets: [{
+                        label: 'Daily Submissions',
+                        data: dailyEntries.map(([, count]) => count),
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.1)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // Initialize dashboard on load
+        // Close modal when clicking outside or pressing escape
+        document.addEventListener('click', function(event) {
+            const emailModal = document.getElementById('emailModal');
+            const quickAddModal = document.getElementById('quickAddModal');
+            const csvUploadModal = document.getElementById('csvUploadModal');
+            if (event.target === emailModal) {
+                closeEmailModal();
+            }
+            if (event.target === quickAddModal) {
+                closeQuickAddModal();
+            }
+            if (event.target === csvUploadModal) {
+                closeCSVUploadModal();
+            }
+        });
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeEmailModal();
+                closeQuickAddModal();
+                closeCSVUploadModal();
+            }
+        });
+
+        // Load batches from database
+        async function loadBatches() {
+            try {
+                const response = await fetch('/admin/batches');
+                const data = await response.json();
+                availableBatches = data.batches || [];
+                updateBatchFilter();
+            } catch (error) {
+                console.error('Failed to load batches:', error);
+            }
+        }
+
+        // Update batch filter dropdown
+        function updateBatchFilter() {
+            const select = document.getElementById('batchFilter');
+            select.innerHTML = '<option value="all">All Batches</option>';
+            
+            availableBatches.forEach(batch => {
+                const option = document.createElement('option');
+                option.value = batch.prefix;
+                option.textContent = batch.name;
+                select.appendChild(option);
+            });
+        }
+
+        // Open batch modal
+        function openBatchModal() {
+            document.getElementById('batchModal').style.display = 'block';
+            loadBatchList();
+        }
+
+        // Close batch modal
+        function closeBatchModal() {
+            document.getElementById('batchModal').style.display = 'none';
+            document.getElementById('batchForm').reset();
+        }
+
+        // Add new batch
+        async function addBatch() {
+            const prefix = document.getElementById('batchPrefix').value.trim();
+            const name = document.getElementById('batchName').value.trim();
+            
+            if (!prefix || !name) {
+                showError('Please fill in all fields');
+                return;
+            }
+            
+            const btn = document.getElementById('addBatchBtn');
+            const originalText = btn.innerHTML;
+            
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+                btn.disabled = true;
+                
+                const response = await fetch('/admin/batches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prefix, name })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage(`Batch ${name} added successfully`);
+                    document.getElementById('batchForm').reset();
+                    loadBatches();
+                    loadBatchList();
+                } else {
+                    showError(result.error || 'Failed to add batch');
+                }
+            } catch (error) {
+                console.error('Add batch error:', error);
+                showError('Failed to add batch');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        // Load batch list in modal
+        async function loadBatchList() {
+            const container = document.getElementById('batchList');
+            
+            if (availableBatches.length === 0) {
+                container.innerHTML = '<p style="color: #64748b; text-align: center; margin: 1rem 0;">No batches added yet</p>';
+                return;
+            }
+            
+            container.innerHTML = availableBatches.map(batch => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: #f8f9fa; border-radius: 8px; margin-bottom: 0.5rem;">
+                    <div>
+                        <strong>${batch.name}</strong>
+                        <span style="color: #64748b; margin-left: 0.5rem;">(${batch.prefix})</span>
+                    </div>
+                    <button onclick="deleteBatch('${batch.prefix}')" style="background: #dc2626; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Delete batch
+        async function deleteBatch(prefix) {
+            if (!confirm('Are you sure you want to delete this batch?')) return;
+            
+            try {
+                const response = await fetch(`/admin/batches/${prefix}`, {
+                    method: 'DELETE'
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    showSuccessMessage('Batch deleted successfully');
+                    loadBatches();
+                    loadBatchList();
+                } else {
+                    showError(result.error || 'Failed to delete batch');
+                }
+            } catch (error) {
+                console.error('Delete batch error:', error);
+                showError('Failed to delete batch');
+            }
+        }
+
+        // Toggle mobile menu
+        function toggleMobileMenu() {
+            const content = document.getElementById('headerActionsContent');
+            content.classList.toggle('show');
+        }
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('headerActionsContent');
+            const toggle = document.querySelector('.mobile-menu-toggle');
+            
+            if (!menu.contains(event.target) && !toggle.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetch('/admin/check-auth')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('loginContainer').style.display = 'none';
+                        document.getElementById('dashboard').style.display = 'block';
+                        loadDashboard();
+                    }
+                })
+                .catch(() => {
+                    // Not logged in, show login form
+                });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - LeetCode Analytics</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1f2937;
+            --light: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-400: #94a3b8;
+            --gray-600: #475569;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--dark) 0%, #0f172a 100%);
+            min-height: 100vh;
+            color: var(--light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-card .number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .label {
+            color: var(--gray-400);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .charts-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .chart-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+        }
+
+        .chart-card h3 {
+            margin-bottom: 1.5rem;
+            color: var(--light);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+
+        .activity-section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-400);
+        }
+
+        .error {
+            text-align: center;
+            padding: 3rem;
+            color: var(--danger);
+        }
+
+        .header-controls {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .data-source-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .refresh-btn {
+            background: linear-gradient(45deg, var(--primary), #4f46e5);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .refresh-btn:active {
+            transform: translateY(0);
+        }
+
+        .refresh-btn.loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .refresh-btn.loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .data-source-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .realtime-indicator {
+            background: linear-gradient(45deg, var(--success), #059669);
+            color: white;
+        }
+
+        .cached-indicator {
+            background: linear-gradient(45deg, var(--warning), #d97706);
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 id="student-name">Student Dashboard</h1>
+            <p id="student-subtitle">LeetCode Progress Analytics</p>
+            <div class="header-controls">
+                <button id="refresh-btn" class="refresh-btn">
+                    <i class="fas fa-sync-alt"></i>
+                    Refresh from LeetCode
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading student data...</p>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+            <p id="error-message">Failed to load student data</p>
+        </div>
+
+        <div id="dashboard-content" style="display: none;">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--primary);">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="number" id="total-solved" style="color: var(--primary);">0</div>
+                    <div class="label">Total Solved</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--success);">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="number" id="easy-solved" style="color: var(--success);">0</div>
+                    <div class="label">Easy</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--warning);">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="number" id="medium-solved" style="color: var(--warning);">0</div>
+                    <div class="label">Medium</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--danger);">
+                        <i class="fas fa-fire"></i>
+                    </div>
+                    <div class="number" id="hard-solved" style="color: var(--danger);">0</div>
+                    <div class="label">Hard</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--warning);">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="number" id="current-streak" style="color: var(--warning);">0</div>
+                    <div class="label">Current Streak</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="icon" style="color: var(--success);">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="number" id="longest-streak" style="color: var(--success);">0</div>
+                    <div class="label">Best Streak</div>
+                </div>
+            </div>
+
+            <div class="charts-section">
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-bar"></i> Progress Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="progress-chart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <h3><i class="fas fa-chart-line"></i> Growth Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="growth-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="activity-section">
+                <h3><i class="fas fa-history"></i> Recent Activity</h3>
+                <div id="recent-activity">
+                    <div class="activity-item">
+                        <span>Last Submission</span>
+                        <span id="last-activity-display">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class StudentDashboard {
+            constructor() {
+                this.username = this.getUsername();
+                this.studentData = null;
+                this.charts = {};
+                this.init();
+            }
+
+            getUsername() {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get('username');
+            }
+
+            async init() {
+                if (!this.username) {
+                    this.showError('No username provided');
+                    return;
+                }
+
+                document.getElementById('student-name').textContent = `${this.username}'s Dashboard`;
+                await this.loadStudentData(); // Use leaderboard data
+            }
+
+            async loadStudentData() {
+                try {
+                    document.getElementById('loading').style.display = 'block';
+                    document.getElementById('dashboard-content').style.display = 'none';
+                    document.getElementById('error').style.display = 'none';
+                    
+                    console.log(`🔄 Fetching ACCURATE data for ${this.username}...`);
+                    
+                    const timestamp = Date.now();
+                    const response = await fetch(`/api/student/${this.username}?t=${timestamp}`, {
+                        cache: 'no-cache',
+                        headers: {
+                            'Cache-Control': 'no-cache',
+                            'Pragma': 'no-cache'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Failed to fetch student data: ${response.status}`);
+                    }
+                    
+                    const studentData = await response.json();
+                    
+                    console.log(`✅ Received accurate data:`, studentData);
+                    
+                    this.studentData = studentData;
+                    this.displayDashboard();
+                } catch (error) {
+                    console.error('Load student data error:', error);
+                    this.showError(error.message);
+                }
+            }
+
+            displayDashboard() {
+                if (!this.studentData) {
+                    this.showError('Student not found');
+                    return;
+                }
+
+                // Display accurate data
+                document.getElementById('total-solved').textContent = this.studentData.totalSolved || 0;
+                document.getElementById('easy-solved').textContent = this.studentData.easy || 0;
+                document.getElementById('medium-solved').textContent = this.studentData.medium || 0;
+                document.getElementById('hard-solved').textContent = this.studentData.hard || 0;
+                document.getElementById('current-streak').textContent = this.studentData.currentStreak || 0;
+                document.getElementById('longest-streak').textContent = this.studentData.longestStreak || 0;
+
+                // Update subtitle
+                document.getElementById('student-subtitle').innerHTML = `
+                    Live Data from LeetCode • Updated: ${new Date().toLocaleString()}
+                `;
+
+                // Update recent activity
+                const lastActivity = this.studentData.last_activity_date && this.studentData.last_activity_date !== 'No recent activity' ?
+                    this.formatLastActivity(this.studentData.last_activity_date) : 'No recent activity';
+                document.getElementById('last-activity-display').textContent = lastActivity;
+
+                // Create charts
+                this.createProgressChart();
+                this.createGrowthChart();
+
+                // Show dashboard
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('dashboard-content').style.display = 'block';
+            }
+            
+            formatLastActivity(dateString) {
+                if (!dateString || dateString === 'No recent activity') {
+                    return 'No recent activity';
+                }
+                
+                // Handle relative time formats like "6h ago"
+                if (dateString.includes('ago') || dateString === 'Just now') {
+                    return dateString;
+                }
+                
+                const date = new Date(dateString);
+                const now = new Date();
+                const diffTime = Math.abs(now - date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays === 1) return 'Today';
+                if (diffDays === 2) return 'Yesterday';
+                if (diffDays <= 7) return `${diffDays - 1} days ago`;
+                
+                return date.toLocaleDateString();
+            }
+
+
+
+            createProgressChart() {
+                const ctx = document.getElementById('progress-chart');
+                if (!ctx) return;
+
+                this.charts.progress = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Easy', 'Medium', 'Hard'],
+                        datasets: [{
+                            label: 'Problems Solved',
+                            data: [
+                                this.studentData.easy || 0,
+                                this.studentData.medium || 0,
+                                this.studentData.hard || 0
+                            ],
+                            backgroundColor: [
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: 'white' } }
+                        },
+                        scales: {
+                            x: { ticks: { color: 'white' } },
+                            y: { ticks: { color: 'white' }, beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            createGrowthChart() {
+                const ctx = document.getElementById('growth-chart');
+                if (!ctx) return;
+
+                this.charts.growth = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Current Streak', 'Best Streak'],
+                        datasets: [{
+                            data: [
+                                this.studentData.currentStreak || 0,
+                                this.studentData.longestStreak || 0
+                            ],
+                            backgroundColor: [
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(16, 185, 129, 0.8)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: 'white' } }
+                        }
+                    }
+                });
+            }
+
+            showError(message) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error-message').textContent = message;
+                document.getElementById('error').style.display = 'block';
+            }
+        }
+
+        // Initialize dashboard when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            const dashboard = new StudentDashboard();
+            
+            // Add refresh button event listener
+            const refreshBtn = document.getElementById('refresh-btn');
+            
+            refreshBtn.addEventListener('click', async () => {
+                refreshBtn.classList.add('loading');
+                refreshBtn.disabled = true;
+                
+                try {
+                    await dashboard.loadStudentData();
+                } finally {
+                    refreshBtn.classList.remove('loading');
+                    refreshBtn.disabled = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
